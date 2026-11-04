@@ -54,14 +54,30 @@ body {
 .welcome .ghost { padding: 12px 16px; }
 
 .container {
-  max-width: 640px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: 24px 20px 48px;
   display: grid;
   gap: 16px;
 }
 
-.header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.brand { display: grid; gap: 8px; flex: 1; min-width: min(100%, 280px); }
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(280px, 360px);
+  gap: 16px;
+  align-items: start;
+}
+.column { display: grid; gap: 16px; align-content: start; }
+.result { display: grid; }
+@media (min-width: 961px) {
+  .result { position: sticky; top: 16px; }
+}
+@media (max-width: 960px) {
+  .workspace { grid-template-columns: 1fr; }
+  .has-bills .result { order: -1; }
+}
 h1 { margin: 0; font-size: 1.75rem; }
 h2 { margin: 0; font-size: 1.05rem; }
 .header p { margin: 4px 0 0; }
@@ -84,7 +100,8 @@ h2 { margin: 0; font-size: 1.05rem; }
 .grow { flex: 1; }
 .amount { width: 140px; }
 .currency { width: 210px; }
-.toolbar { display: flex; align-items: flex-end; gap: 8px; }
+.toolbar { display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.file-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .label-line { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; color: var(--muted); }
 .label-line label { color: inherit; }
 

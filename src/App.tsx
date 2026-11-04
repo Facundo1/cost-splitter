@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { Card } from './components/Card';
 import { ConfirmDialog } from './components/ConfirmDialog';
+import { GroupFile } from './components/GroupFile';
 import { ExpenseForm } from './components/ExpenseForm';
 import { ExpenseList } from './components/ExpenseList';
 import { PeoplePanel } from './components/PeoplePanel';
@@ -43,8 +45,8 @@ export default function App() {
   return (
     <main className="container">
       <header className="header">
-        <div>
-          <h1>🧾 Split It</h1>
+        <div className="brand">
+          <h1>Split It</h1>
           <label className="field">
             <span className="sr-only">Group name</span>
             <input
@@ -72,6 +74,7 @@ export default function App() {
               ))}
             </select>
           </label>
+          <GroupFile />
           {hasPeople && (
             <button type="button" className="ghost" onClick={() => setConfirmingReset(true)}>
               Start over
@@ -80,14 +83,28 @@ export default function App() {
         </div>
       </header>
 
-      <PeoplePanel />
-      <ExpenseForm editingId={editingId} onDone={() => setSelectedId(null)} />
-      {hasExpenses && (
-        <>
+      <div className={hasExpenses ? 'workspace has-bills' : 'workspace'}>
+        <div className="column">
+          <PeoplePanel />
+          <ExpenseForm editingId={editingId} onDone={() => setSelectedId(null)} />
+        </div>
+        {hasExpenses ? (
           <ExpenseList onEdit={setSelectedId} />
-          <SettlementPanel />
-        </>
-      )}
+        ) : (
+          <Card title="Bills">
+            <p className="muted">Bills you add will show up here, with who paid and the day.</p>
+          </Card>
+        )}
+        <div className="result">
+          {hasExpenses ? (
+            <SettlementPanel />
+          ) : (
+            <Card title="Who pays whom" highlight>
+              <p className="muted">After the first bill, this shows who should pay whom, and what each person spent.</p>
+            </Card>
+          )}
+        </div>
+      </div>
 
       <ConfirmDialog
         open={confirmingReset}

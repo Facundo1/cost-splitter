@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CURRENCIES, CURRENCY_NAME, isCurrencyCode, type CurrencyCode } from '../lib/currency';
 import { formatDay } from '../lib/day';
 import { convertCents, formatCents } from '../lib/money';
@@ -18,13 +18,27 @@ export function SettlementPanel() {
   const removePayment = useLedgerStore((s) => s.removePayment);
   const nameOf = useNameOf();
   const [display, setDisplay] = useState<CurrencyCode | ''>('');
+  const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef<number | undefined>(undefined);
   const shown = display === currency ? '' : display;
   const { quote, status } = useExchangeQuote(currency, shown);
   const note = rateNote(status, quote?.asOf, currency);
 
   const shares = computeShares(people, expenses);
   const transfers = settle(computeBalances(people, expenses, payments));
-  const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses, currency, groupName, payments }));
+  const message = settlementMessage({ people, expenses, currency, groupName, payments });
+  const shareUrl = whatsappShareUrl(message);
+
+  function copySummary() {
+    void navigator.clipboard.writeText(message).then(
+      () => {
+        setCopied(true);
+        window.clearTimeout(copiedTimer.current);
+        copiedTimer.current = window.setTimeout(() => setCopied(false), 2000);
+      },
+      () => setCopied(false),
+    );
+  }
   const other = (cents: number) => (quote ? formatCents(convertCents(cents, quote.rate), quote.to) : null);
 
   return (
@@ -32,16 +46,21 @@ export function SettlementPanel() {
       title="Who pays whom"
       highlight
       action={
-        <a
-          className="button whatsapp"
-          href={shareUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Share on WhatsApp"
-        >
-          <WhatsAppIcon />
-          Share
-        </a>
+        <div className="row tight">
+          <button type="button" className="ghost" onClick={copySummary}>
+            {copied ? 'Copied' : 'Copy summary'}
+          </button>
+          <a
+            className="button whatsapp"
+            href={shareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share on WhatsApp"
+          >
+            <WhatsAppIcon />
+            Share
+          </a>
+        </div>
       }
     >
       <label className="field">
@@ -105,20 +124,18 @@ export function SettlementPanel() {
         </>
       )}
 
-      <details>
-        <summary>What each person spent</summary>
-        <ul className="list" aria-label="What each person spent">
-          {[...shares].map(([id, cents]) => (
-            <li key={id} className="list-item">
-              {nameOf(id)}
-              <span className="money">
-                {formatCents(cents, currency)}
-                {other(cents) && <span className="muted small"> · about {other(cents)}</span>}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </details>
+      <h3 className="subhead">What each person spent</h3>
+      <ul className="list" aria-label="What each person spent">
+        {[...shares].map(([id, cents]) => (
+          <li key={id} className="list-item">
+            {nameOf(id)}
+            <span className="money">
+              {formatCents(cents, currency)}
+              {other(cents) && <span className="muted small"> · about {other(cents)}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
     </Card>
   );
 }

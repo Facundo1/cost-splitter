@@ -109,7 +109,7 @@ Things I knowingly skipped to stay in the time box, roughly in the order I'd add
 
 1. **Shareable ledger link** — encode the state in the URL so the group can *open and edit* the same ledger without a backend (today WhatsApp sharing sends a read-only summary).
 2. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
-3. **Runtime validation of stored data** (e.g. Zod). Today a versioned storage key (`split-it:v2`) is the migration strategy.
+3. **A schema library for stored data** (e.g. Zod). A saved file is checked by hand in `parseLedgerBackup` before it replaces the group. Data this browser already saved is still trusted, with defaults when a new field is missing.
 4. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
 5. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
 6. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.

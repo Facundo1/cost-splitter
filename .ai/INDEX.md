@@ -6,34 +6,37 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | File | Lines | Exports / contents |
 | --- | ---: | --- |
 | `src/App.test.tsx` | 118 | 8 test cases |
-| `src/App.tsx` | 111 | `App` (function) |
+| `src/App.tsx` | 113 | `App` (function) |
 | `src/components/Card.tsx` | 22 | `Card` (function) |
 | `src/components/ConfirmDialog.tsx` | 46 | `ConfirmDialog` (function) |
 | `src/components/ExpenseForm.test.tsx` | 78 | 5 test cases |
-| `src/components/ExpenseForm.tsx` | 138 | `ExpenseForm` (function) |
-| `src/components/ExpenseList.tsx` | 52 | `ExpenseList` (function) |
-| `src/components/PeoplePanel.tsx` | 93 | `PeoplePanel` (function) |
-| `src/components/SettlementPanel.tsx` | 110 | `SettlementPanel` (function) |
+| `src/components/ExpenseForm.tsx` | 172 | `ExpenseForm` (function) |
+| `src/components/ExpenseList.tsx` | 54 | `ExpenseList` (function) |
+| `src/components/GroupFile.tsx` | 55 | `GroupFile` (function) |
+| `src/components/PeoplePanel.tsx` | 94 | `PeoplePanel` (function) |
+| `src/components/SettlementPanel.tsx` | 160 | `SettlementPanel` (function) |
 | `src/components/WelcomeScreen.tsx` | 49 | `SESSION_KEY` (const), `WelcomeScreen` (function) |
+| `src/lib/backup.test.ts` | 30 | 1 test cases |
+| `src/lib/backup.ts` | 114 | `serializeLedger` (function), `parseLedgerBackup` (function) |
 | `src/lib/currency.ts` | 14 | `CURRENCIES` (const), `CurrencyCode` (type), `CURRENCY_NAME` (const), `isCurrencyCode` (function) |
 | `src/lib/day.test.ts` | 10 | 1 test cases |
 | `src/lib/day.ts` | 19 | `todayIso` (function), `formatDay` (function) |
-| `src/lib/ledger.test.ts` | 138 | 14 test cases |
-| `src/lib/ledger.ts` | 73 | `Ledger` (interface), `EMPTY_LEDGER` (const), `setCurrency` (function), `setGroupName` (function), `loadLedger` (function), `isNameTaken` (function), `totalCents` (function), `isNameInput` (function), `peopleWithExpenses` (function), `addPerson` (function), `removePerson` (function), `addExpense` (function), `updateExpense` (function), `removeExpense` (function) |
+| `src/lib/ledger.test.ts` | 147 | 15 test cases |
+| `src/lib/ledger.ts` | 87 | `Ledger` (interface), `EMPTY_LEDGER` (const), `setCurrency` (function), `setGroupName` (function), `loadLedger` (function), `isNameTaken` (function), `totalCents` (function), `isNameInput` (function), `peopleWithExpenses` (function), `addPerson` (function), `removePerson` (function), `addExpense` (function), `updateExpense` (function), `removeExpense` (function), `addPayment` (function), `removePayment` (function) |
 | `src/lib/money.test.ts` | 55 | 8 test cases |
 | `src/lib/money.ts` | 43 | `parseAmountToCents` (function), `isAmountInput` (function), `centsToInput` (function), `formatCents` (function), `convertCents` (function) |
 | `src/lib/sample.test.ts` | 13 | 1 test cases |
-| `src/lib/sample.ts` | 30 | `sampleDinner` (function) |
-| `src/lib/settle.test.ts` | 107 | 11 test cases |
-| `src/lib/settle.ts` | 44 | `computeShares` (function), `computeBalances` (function), `settle` (function) |
-| `src/lib/share.test.ts` | 82 | 6 test cases |
-| `src/lib/share.ts` | 66 | `settlementMessage` (function), `whatsappShareUrl` (function) |
-| `src/lib/types.ts` | 22 | `PersonId` (type), `Person` (interface), `Expense` (interface), `Transfer` (interface) |
+| `src/lib/sample.ts` | 31 | `sampleDinner` (function) |
+| `src/lib/settle.test.ts` | 124 | 13 test cases |
+| `src/lib/settle.ts` | 72 | `computeShares` (function), `computeBalances` (function), `settle` (function) |
+| `src/lib/share.test.ts` | 85 | 6 test cases |
+| `src/lib/share.ts` | 79 | `settlementMessage` (function), `whatsappShareUrl` (function) |
+| `src/lib/types.ts` | 30 | `PersonId` (type), `Person` (interface), `Expense` (interface), `Payment` (interface), `Transfer` (interface) |
 | `src/main.tsx` | 11 | — |
 | `src/rates/currencyApi.test.ts` | 51 | 6 test cases |
 | `src/rates/currencyApi.ts` | 55 | `RateQuote` (interface), `ExchangeRateReader` (interface), `parseCurrencyApi` (function), `createCurrencyApiReader` (function), `currencyApi` (const) |
 | `src/rates/lastQuote.ts` | 23 | `readLastQuote` (function), `writeLastQuote` (function) |
 | `src/rates/useExchangeQuote.ts` | 48 | `QuoteStatus` (type), `useExchangeQuote` (function) |
 | `src/store/ledgerStore.test.ts` | 55 | 6 test cases |
-| `src/store/ledgerStore.ts` | 66 | `STORAGE_KEY` (const), `useLedgerStore` (const), `useNameOf` (function) |
+| `src/store/ledgerStore.ts` | 79 | `STORAGE_KEY` (const), `useLedgerStore` (const), `useNameOf` (function) |
 | `src/test/setup.ts` | 22 | — |
