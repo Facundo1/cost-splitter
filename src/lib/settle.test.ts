@@ -85,4 +85,13 @@ describe('settle', () => {
     }
     expect([...after.values()].every((v) => v === 0)).toBe(true);
   });
+
+  it('known limitation: greedy is not always minimal', () => {
+    // Optimal is 4 transfers: {+6,-5,-1} and {+4,+3,-7} cancel out independently.
+    // Greedy pairs 7 with 6 first and needs 5. Acceptable trade-off — see DECISIONS.md.
+    const balances = new Map(
+      Object.entries({ a: 600, b: 400, c: 300, d: -700, e: -500, f: -100 }),
+    );
+    expect(settle(balances)).toHaveLength(5);
+  });
 });

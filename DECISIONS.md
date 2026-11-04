@@ -34,6 +34,16 @@ Amounts are **integer cents** end to end. Input like `19.99` is parsed with stri
 
 One GitHub Actions workflow: `npm ci → lint → typecheck → test → build` on every push/PR, then deploy to GitHub Pages on `main`. Concurrency cancels stale runs. Node version comes from `.nvmrc` so local and CI match.
 
+## AI context ("RAG for the codebase")
+
+Goal: any AI assistant gets focused context per area without burning tokens reading the whole repo.
+
+- **Hierarchical, on-demand retrieval instead of a vector DB.** A root `AGENTS.md` (always loaded, ~40 lines) works as a router: task → area → files. Each area has its own `AGENTS.md` with its invariants and rules, loaded only when the model works there. `AGENTS.md` is the cross-tool standard; `CLAUDE.md` just imports it, so there's one source of truth.
+- **Generated symbol map** (`.ai/INDEX.md`): file → exports → size. The model finds the right file in one small read instead of exploring.
+- **Freshness enforced by CI** (`npm run context:check`): stale AI context is worse than none, so it's treated like a failing test.
+- **Explicit "never read" list** (`node_modules`, `dist`, lockfile): the biggest token sinks.
+- **Why not embeddings + vector store?** For ~15 files, chunking/embedding/retrieval adds infra, latency and a second source of truth, and semantic chunks lose the structure (invariants, ownership) that matters for code. I'd revisit it at hundreds of files or when pulling in external docs (tickets, ADRs). Code search (grep/LSP) + curated area context beats it at this size.
+
 ## Deliberately left out
 
 Things I knowingly skipped to stay in the time box, roughly in the order I'd add them:
