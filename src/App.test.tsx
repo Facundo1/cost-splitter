@@ -4,20 +4,35 @@ import { describe, expect, it } from 'vitest';
 import App from './App';
 import { STORAGE_KEY } from './store/ledgerStore';
 
+async function startApp() {
+  const user = userEvent.setup();
+  render(<App />);
+  await user.click(screen.getByRole('button', { name: 'Start' }));
+  return user;
+}
+
 async function addPerson(user: ReturnType<typeof userEvent.setup>, name: string) {
   await user.type(screen.getByLabelText('Name'), name);
   await user.click(screen.getByRole('button', { name: 'Add' }));
 }
 
 describe('App', () => {
-  it('asks for at least two people before adding expenses', () => {
+  it('explains the app, then opens it', async () => {
+    const user = userEvent.setup();
     render(<App />);
+    expect(screen.getByRole('heading', { name: /who should pay whom/i })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Name')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Start' }));
+    expect(screen.getByText(/add at least two people, then you can add a bill/i)).toBeInTheDocument();
+  });
+
+  it('asks for at least two people before adding expenses', async () => {
+    await startApp();
     expect(screen.getByText(/add at least two people, then you can add a bill/i)).toBeInTheDocument();
   });
 
   it('splits an expense and shows who pays whom', async () => {
-    const user = userEvent.setup();
-    render(<App />);
+    const user = await startApp();
 
     await addPerson(user, 'Ana');
     await addPerson(user, 'Beto');
@@ -47,30 +62,26 @@ describe('App', () => {
   });
 
   it('saves changes to localStorage', async () => {
-    const user = userEvent.setup();
-    render(<App />);
+    const user = await startApp();
     await addPerson(user, 'Ana');
     expect(localStorage.getItem(STORAGE_KEY)).toContain('"name":"Ana"');
   });
 
   it('rejects duplicate names', async () => {
-    const user = userEvent.setup();
-    render(<App />);
+    const user = await startApp();
     await addPerson(user, 'Ana');
     await user.type(screen.getByLabelText('Name'), 'ana');
     expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
   });
 
   it('does not accept digits in names', async () => {
-    const user = userEvent.setup();
-    render(<App />);
+    const user = await startApp();
     await user.type(screen.getByLabelText('Name'), 'Ana2');
     expect(screen.getByLabelText('Name')).toHaveValue('Ana');
   });
 
   it('asks for confirmation before deleting everything', async () => {
-    const user = userEvent.setup();
-    render(<App />);
+    const user = await startApp();
     await addPerson(user, 'Ana');
 
     await user.click(screen.getByRole('button', { name: 'Start over' }));
@@ -86,8 +97,7 @@ describe('App', () => {
   });
 
   it('removes people and expenses, but not someone who still has expenses', async () => {
-    const user = userEvent.setup();
-    render(<App />);
+    const user = await startApp();
     await addPerson(user, 'Ana');
     await addPerson(user, 'Beto');
     await addPerson(user, 'Caro');

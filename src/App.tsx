@@ -4,6 +4,7 @@ import { ExpenseForm } from './components/ExpenseForm';
 import { ExpenseList } from './components/ExpenseList';
 import { PeoplePanel } from './components/PeoplePanel';
 import { SettlementPanel } from './components/SettlementPanel';
+import { SESSION_KEY, WelcomeScreen } from './components/WelcomeScreen';
 import { CURRENCIES, CURRENCY_NAME, isCurrencyCode } from './lib/currency';
 import { useLedgerStore } from './store/ledgerStore';
 
@@ -14,6 +15,18 @@ export default function App() {
   const setCurrency = useLedgerStore((s) => s.setCurrency);
   const reset = useLedgerStore((s) => s.reset);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [started, setStarted] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
+
+  if (!started) {
+    return (
+      <WelcomeScreen
+        onStart={() => {
+          sessionStorage.setItem(SESSION_KEY, '1');
+          setStarted(true);
+        }}
+      />
+    );
+  }
 
   return (
     <main className="container">
@@ -68,7 +81,7 @@ export default function App() {
       />
 
       <footer className="muted small">
-        Data stays in your browser (localStorage). No account, no server.
+        Data stays in this browser. No account, no server.
       </footer>
     </main>
   );

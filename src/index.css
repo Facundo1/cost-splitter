@@ -39,6 +39,19 @@ body {
   color: var(--text);
 }
 
+.welcome {
+  max-width: 34rem;
+  margin: 8vh auto;
+  padding: 32px 24px 48px;
+  display: grid;
+  gap: 16px;
+}
+.welcome h1 { font-size: 2.4rem; letter-spacing: -0.03em; line-height: 1.15; }
+.lede { margin: 0; font-size: 1.1rem; }
+.eyebrow { margin: 0; font-weight: 700; color: var(--accent); }
+.steps { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; }
+.welcome button { justify-self: start; padding: 12px 28px; font-size: 1.05rem; }
+
 .container {
   max-width: 640px;
   margin: 0 auto;

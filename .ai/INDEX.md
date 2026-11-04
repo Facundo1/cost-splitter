@@ -5,8 +5,8 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 
 | File | Lines | Exports / contents |
 | --- | ---: | --- |
-| `src/App.test.tsx` | 108 | 7 test cases |
-| `src/App.tsx` | 76 | `App` (function) |
+| `src/App.test.tsx` | 118 | 8 test cases |
+| `src/App.tsx` | 89 | `App` (function) |
 | `src/components/Card.tsx` | 22 | `Card` (function) |
 | `src/components/ConfirmDialog.tsx` | 46 | `ConfirmDialog` (function) |
 | `src/components/ExpenseForm.test.tsx` | 78 | 5 test cases |
@@ -14,6 +14,7 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | `src/components/ExpenseList.tsx` | 46 | `ExpenseList` (function) |
 | `src/components/PeoplePanel.tsx` | 68 | `PeoplePanel` (function) |
 | `src/components/SettlementPanel.tsx` | 69 | `SettlementPanel` (function) |
+| `src/components/WelcomeScreen.tsx` | 44 | `SESSION_KEY` (const), `WelcomeScreen` (function) |
 | `src/lib/currency.ts` | 14 | `CURRENCIES` (const), `CurrencyCode` (type), `CURRENCY_NAME` (const), `isCurrencyCode` (function) |
 | `src/lib/ledger.test.ts` | 113 | 12 test cases |
 | `src/lib/ledger.ts` | 51 | `Ledger` (interface), `EMPTY_LEDGER` (const), `setCurrency` (function), `isNameTaken` (function), `totalCents` (function), `isNameInput` (function), `peopleWithExpenses` (function), `addPerson` (function), `removePerson` (function), `addExpense` (function), `removeExpense` (function) |
@@ -21,10 +22,10 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | `src/lib/money.ts` | 33 | `parseAmountToCents` (function), `isAmountInput` (function), `formatCents` (function) |
 | `src/lib/settle.test.ts` | 107 | 11 test cases |
 | `src/lib/settle.ts` | 44 | `computeShares` (function), `computeBalances` (function), `settle` (function) |
-| `src/lib/share.test.ts` | 73 | 6 test cases |
+| `src/lib/share.test.ts` | 78 | 6 test cases |
 | `src/lib/share.ts` | 64 | `settlementMessage` (function), `whatsappShareUrl` (function) |
 | `src/lib/types.ts` | 21 | `PersonId` (type), `Person` (interface), `Expense` (interface), `Transfer` (interface) |
 | `src/main.tsx` | 11 | — |
 | `src/store/ledgerStore.test.ts` | 55 | 6 test cases |
 | `src/store/ledgerStore.ts` | 56 | `STORAGE_KEY` (const), `useLedgerStore` (const), `useNameOf` (function) |
-| `src/test/setup.ts` | 21 | — |
+| `src/test/setup.ts` | 22 | — |

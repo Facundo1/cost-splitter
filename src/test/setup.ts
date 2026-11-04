@@ -17,4 +17,5 @@ afterEach(() => {
   cleanup();
   useLedgerStore.setState(EMPTY_LEDGER);
   localStorage.clear();
+  sessionStorage.clear();
 });
