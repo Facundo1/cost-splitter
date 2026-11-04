@@ -12,7 +12,7 @@ export function ExpenseList() {
     <Card
       title={
         <>
-          Expenses <span className="muted">· total {formatCents(totalCents(expenses))}</span>
+          Bills <span className="muted">· {formatCents(totalCents(expenses))} in total</span>
         </>
       }
     >
@@ -22,7 +22,7 @@ export function ExpenseList() {
             <div>
               <strong>{e.description}</strong>
               <div className="muted small">
-                {nameOf(e.paidBy)} paid · split {e.splitAmong.length} ways
+                {nameOf(e.paidBy)} paid · shared by {e.splitAmong.length} {e.splitAmong.length === 1 ? 'person' : 'people'}
               </div>
             </div>
             <div className="row tight">

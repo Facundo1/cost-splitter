@@ -17,11 +17,11 @@ export default function App() {
       <header className="header">
         <div>
           <h1>🧾 Split It</h1>
-          <p className="muted">Split group expenses. Settle up with the fewest transfers.</p>
+          <p className="muted">Add the people, add what someone paid, and see who should pay whom.</p>
         </div>
         {hasPeople && (
           <button type="button" className="ghost" onClick={() => setConfirmingReset(true)}>
-            Reset
+            Start over
           </button>
         )}
       </header>
@@ -37,9 +37,9 @@ export default function App() {
 
       <ConfirmDialog
         open={confirmingReset}
-        title="Delete everything?"
-        message="All people and expenses will be permanently deleted. This action can't be undone."
-        confirmLabel="Delete everything"
+        title="Erase everything?"
+        message="This removes every person and every bill. You can't undo it."
+        confirmLabel="Erase everything"
         onConfirm={() => {
           reset();
           setConfirmingReset(false);

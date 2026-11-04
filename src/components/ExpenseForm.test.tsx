@@ -21,10 +21,10 @@ const lastExpense = () => useLedgerStore.getState().expenses.at(-1);
 describe('ExpenseForm', () => {
   it('submits the expense in cents, split among everyone by default', async () => {
     const { user } = setup();
-    await user.type(screen.getByLabelText('What for'), ' Pizza ');
+    await user.type(screen.getByLabelText('What was it for?'), ' Pizza ');
     await user.type(screen.getByLabelText('Amount'), '12,50');
-    await user.selectOptions(screen.getByLabelText('Paid by'), 'Beto');
-    await user.click(screen.getByRole('button', { name: 'Add expense' }));
+    await user.selectOptions(screen.getByLabelText('Who paid?'), 'Beto');
+    await user.click(screen.getByRole('button', { name: 'Add this bill' }));
 
     expect(lastExpense()).toMatchObject({
       description: 'Pizza',
@@ -36,18 +36,18 @@ describe('ExpenseForm', () => {
 
   it('only splits among checked people', async () => {
     const { user } = setup();
-    await user.type(screen.getByLabelText('What for'), 'Taxi');
+    await user.type(screen.getByLabelText('What was it for?'), 'Taxi');
     await user.type(screen.getByLabelText('Amount'), '9');
     await user.click(screen.getByLabelText('Caro'));
-    await user.click(screen.getByRole('button', { name: 'Add expense' }));
+    await user.click(screen.getByRole('button', { name: 'Add this bill' }));
 
     expect(lastExpense()).toMatchObject({ splitAmong: ['a', 'b'] });
   });
 
   it('cannot submit an invalid amount or with nobody to split among', async () => {
     const { user } = setup();
-    const submit = screen.getByRole('button', { name: 'Add expense' });
-    await user.type(screen.getByLabelText('What for'), 'Taxi');
+    const submit = screen.getByRole('button', { name: 'Add this bill' });
+    await user.type(screen.getByLabelText('What was it for?'), 'Taxi');
 
     await user.type(screen.getByLabelText('Amount'), 'abc');
     expect(screen.getByLabelText('Amount')).toHaveValue('');

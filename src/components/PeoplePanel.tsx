@@ -22,7 +22,7 @@ export function PeoplePanel() {
   }
 
   return (
-    <Card title="1. Who's in?">
+    <Card title="People">
       <form onSubmit={handleSubmit} className="row">
         <label className="sr-only" htmlFor="person-name">
           Name
@@ -33,7 +33,7 @@ export function PeoplePanel() {
           onChange={(e) => {
             if (isNameInput(e.target.value)) setName(e.target.value);
           }}
-          placeholder="Add a name"
+          placeholder="Type a name"
           maxLength={30}
           autoComplete="off"
         />
@@ -41,7 +41,8 @@ export function PeoplePanel() {
           Add
         </button>
       </form>
-      {isDuplicate && <p className="hint">That name is already in the group.</p>}
+      {isDuplicate && <p className="hint">That name is already here.</p>}
+      {people.length === 0 && <p className="muted small">Add everyone who shared the cost.</p>}
 
       {people.length > 0 && (
         <ul className="chips">

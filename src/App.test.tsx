@@ -12,7 +12,7 @@ async function addPerson(user: ReturnType<typeof userEvent.setup>, name: string)
 describe('App', () => {
   it('asks for at least two people before adding expenses', () => {
     render(<App />);
-    expect(screen.getByText(/add at least two people/i)).toBeInTheDocument();
+    expect(screen.getByText(/add at least two people, then you can add a bill/i)).toBeInTheDocument();
   });
 
   it('splits an expense and shows who pays whom', async () => {
@@ -23,12 +23,12 @@ describe('App', () => {
     await addPerson(user, 'Beto');
     await addPerson(user, 'Caro');
 
-    await user.type(screen.getByLabelText('What for'), 'Asado');
+    await user.type(screen.getByLabelText('What was it for?'), 'Dinner');
     await user.type(screen.getByLabelText('Amount'), '30');
-    await user.selectOptions(screen.getByLabelText('Paid by'), 'Ana');
-    await user.click(screen.getByRole('button', { name: 'Add expense' }));
+    await user.selectOptions(screen.getByLabelText('Who paid?'), 'Ana');
+    await user.click(screen.getByRole('button', { name: 'Add this bill' }));
 
-    const transfers = within(screen.getByRole('list', { name: 'Transfers' }));
+    const transfers = within(screen.getByRole('list', { name: 'Who pays whom' }));
     const items = transfers.getAllByRole('listitem').map((li) => li.textContent);
     expect(items).toHaveLength(2);
     expect(items.some((t) => /Beto pays Ana\s*\$10[.,]00/.test(t ?? ''))).toBe(true);
@@ -38,7 +38,7 @@ describe('App', () => {
     const text = new URL(share.getAttribute('href')!).searchParams.get('text');
     expect(text).toMatch(/Beto → Ana: \*\$10[.,]00\*/);
 
-    const spent = within(screen.getByRole('list', { name: 'Spent per person' }));
+    const spent = within(screen.getByRole('list', { name: 'What each person spent' }));
     expect(spent.getAllByRole('listitem').map((li) => li.textContent)).toEqual([
       expect.stringMatching(/Ana\$10[.,]00/),
       expect.stringMatching(/Beto\$10[.,]00/),
@@ -73,15 +73,15 @@ describe('App', () => {
     render(<App />);
     await addPerson(user, 'Ana');
 
-    await user.click(screen.getByRole('button', { name: 'Reset' }));
-    const dialog = screen.getByRole('alertdialog', { name: /delete everything/i });
-    expect(dialog).toHaveTextContent(/can't be undone/i);
+    await user.click(screen.getByRole('button', { name: 'Start over' }));
+    const dialog = screen.getByRole('alertdialog', { name: /erase everything/i });
+    expect(dialog).toHaveTextContent(/can't undo it/i);
 
     await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
     expect(screen.getByText('Ana')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Reset' }));
-    await user.click(screen.getByRole('button', { name: 'Delete everything' }));
+    await user.click(screen.getByRole('button', { name: 'Start over' }));
+    await user.click(screen.getByRole('button', { name: 'Erase everything' }));
     expect(screen.queryByText('Ana')).not.toBeInTheDocument();
   });
 
@@ -95,9 +95,9 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Remove Caro' }));
     expect(screen.queryByText('Caro')).not.toBeInTheDocument();
 
-    await user.type(screen.getByLabelText('What for'), 'Pizza');
+    await user.type(screen.getByLabelText('What was it for?'), 'Pizza');
     await user.type(screen.getByLabelText('Amount'), '10');
-    await user.click(screen.getByRole('button', { name: 'Add expense' }));
+    await user.click(screen.getByRole('button', { name: 'Add this bill' }));
     expect(screen.getByRole('button', { name: 'Remove Ana' })).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Delete Pizza' }));

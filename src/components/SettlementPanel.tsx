@@ -15,7 +15,7 @@ export function SettlementPanel() {
 
   return (
     <Card
-      title="3. Settle up"
+      title="Who pays whom"
       highlight
       action={
         <a
@@ -31,9 +31,9 @@ export function SettlementPanel() {
       }
     >
       {transfers.length === 0 ? (
-        <p className="muted">Everyone is even. 🎉</p>
+        <p className="muted">Nobody owes anything.</p>
       ) : (
-        <ol className="transfers" aria-label="Transfers">
+        <ol className="transfers" aria-label="Who pays whom">
           {transfers.map((t) => (
             <li key={`${t.from}-${t.to}`}>
               <strong>{nameOf(t.from)}</strong> pays <strong>{nameOf(t.to)}</strong>{' '}
@@ -44,8 +44,8 @@ export function SettlementPanel() {
       )}
 
       <details>
-        <summary>Spent per person</summary>
-        <ul className="list" aria-label="Spent per person">
+        <summary>What each person spent</summary>
+        <ul className="list" aria-label="What each person spent">
           {[...shares].map(([id, cents]) => (
             <li key={id} className="list-item">
               {nameOf(id)}

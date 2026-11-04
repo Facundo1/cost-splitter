@@ -34,18 +34,18 @@ export function ExpenseForm() {
   }
 
   return (
-    <Card title="2. Add an expense">
+    <Card title="Add a bill">
       {people.length < 2 ? (
-        <p className="muted">Add at least two people to start splitting.</p>
+        <p className="muted">Add at least two people, then you can add a bill.</p>
       ) : (
         <form onSubmit={handleSubmit} className="stack">
           <div className="row">
             <label className="field grow">
-              <span>What for</span>
+              <span>What was it for?</span>
               <input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Asado, nafta, Airbnb…"
+                placeholder="Dinner, taxi, hotel"
                 maxLength={60}
               />
             </label>
@@ -64,7 +64,7 @@ export function ExpenseForm() {
           </div>
 
           <label className="field">
-            <span>Paid by</span>
+            <span>Who paid?</span>
             <select value={payer} onChange={(e) => setPaidBy(e.target.value)}>
               {people.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -75,7 +75,7 @@ export function ExpenseForm() {
           </label>
 
           <fieldset className="field">
-            <legend>Split between</legend>
+            <legend>Who shares this bill?</legend>
             <div className="checks">
               {people.map((p) => (
                 <label key={p.id} className="check">
@@ -91,7 +91,7 @@ export function ExpenseForm() {
           </fieldset>
 
           <button type="submit" disabled={!draft}>
-            Add expense
+            Add this bill
           </button>
         </form>
       )}
