@@ -108,7 +108,7 @@ Things I knowingly skipped to stay in the time box, roughly in the order I'd add
 1. **Shareable ledger link** — encode the state in the URL so the group can *open and edit* the same ledger without a backend (today WhatsApp sharing sends a read-only summary).
 2. **Edit an expense** — today you delete and re-add.
 3. **Uneven splits** — percentages / shares / exact amounts. The domain model (`splitAmong`) would become `{ personId, weight }[]`.
-4. **Multi-currency** — `$` is hardcoded; amounts are assumed to be in one currency.
+4. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. Switching it relabels amounts; it does not convert them. Showing the same total in a second currency is a later step.
 5. **Runtime validation of stored data** (e.g. Zod). Today a versioned storage key (`split-it:v2`) is the migration strategy.
 6. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
 7. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.

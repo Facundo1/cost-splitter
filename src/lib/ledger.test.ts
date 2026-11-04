@@ -8,12 +8,22 @@ import {
   peopleWithExpenses,
   removeExpense,
   removePerson,
+  setCurrency,
   totalCents,
   type Ledger,
 } from './ledger';
 
 const withPeople = (...names: string[]) => names.reduce(addPerson, EMPTY_LEDGER);
 const idOf = (ledger: Ledger, name: string) => ledger.people.find((p) => p.name === name)!.id;
+
+describe('setCurrency', () => {
+  it('keeps people and bills and ignores the same currency', () => {
+    const ledger = withPeople('Ana');
+    expect(setCurrency(ledger, 'EUR').currency).toBe('EUR');
+    expect(setCurrency(ledger, 'EUR').people).toEqual(ledger.people);
+    expect(setCurrency(ledger, 'USD')).toBe(ledger);
+  });
+});
 
 describe('addPerson', () => {
   it('adds a trimmed name with a unique id', () => {

@@ -1,11 +1,17 @@
+import type { CurrencyCode } from './currency';
 import type { Expense, Person, PersonId } from './types';
 
 export interface Ledger {
   people: Person[];
   expenses: Expense[];
+  currency: CurrencyCode;
 }
 
-export const EMPTY_LEDGER: Ledger = { people: [], expenses: [] };
+export const EMPTY_LEDGER: Ledger = { people: [], expenses: [], currency: 'USD' };
+
+export function setCurrency(ledger: Ledger, currency: CurrencyCode): Ledger {
+  return ledger.currency === currency ? ledger : { ...ledger, currency };
+}
 
 export function isNameTaken(people: Person[], name: string): boolean {
   const normalized = name.trim().toLowerCase();

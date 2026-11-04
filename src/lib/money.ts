@@ -1,3 +1,5 @@
+import type { CurrencyCode } from './currency';
+
 export function parseAmountToCents(input: string): number | null {
   const normalized = input.trim().replace(',', '.');
   if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null;
@@ -11,12 +13,20 @@ export function isAmountInput(input: string): boolean {
   return /^\d*([.,]\d{0,2})?$/.test(input);
 }
 
-const formatter = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const formatters = new Map<CurrencyCode, Intl.NumberFormat>();
 
-export function formatCents(cents: number): string {
-  const sign = cents < 0 ? '-' : '';
-  return `${sign}$${formatter.format(Math.abs(cents) / 100)}`;
+function formatter(currency: CurrencyCode): Intl.NumberFormat {
+  const existing = formatters.get(currency);
+  if (existing) return existing;
+  const created = new Intl.NumberFormat('en', {
+    style: 'currency',
+    currency,
+    currencyDisplay: currency === 'ARS' ? 'code' : 'narrowSymbol',
+  });
+  formatters.set(currency, created);
+  return created;
+}
+
+export function formatCents(cents: number, currency: CurrencyCode = 'USD'): string {
+  return formatter(currency).format(cents / 100);
 }

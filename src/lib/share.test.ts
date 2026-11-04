@@ -20,13 +20,14 @@ const money = (amount: string) => amount.replace('.', '[.,]').replace('$', '\\$'
 describe('settlementMessage', () => {
   const ledger: Ledger = {
     people,
-    expenses: [expense('1', 'Asado', 3000, 'a'), expense('2', 'Fernet', 1000, 'b', ['a', 'b'])],
+    currency: 'USD',
+    expenses: [expense('1', 'Dinner', 3000, 'a'), expense('2', 'Drinks', 1000, 'b', ['a', 'b'])],
   };
   const message = settlementMessage(ledger);
 
   it('lists every expense with amount, payer and who it was split between', () => {
-    expect(message).toMatch(new RegExp(`• Asado: ${money('$30.00')} — paid by Ana, split between everyone`));
-    expect(message).toMatch(new RegExp(`• Fernet: ${money('$10.00')} — paid by Beto, split between Ana, Beto`));
+    expect(message).toMatch(new RegExp(`• Dinner: ${money('$30.00')} — paid by Ana, split between everyone`));
+    expect(message).toMatch(new RegExp(`• Drinks: ${money('$10.00')} — paid by Beto, split between Ana, Beto`));
     expect(message).toContain('(2 expenses)');
   });
 
@@ -45,7 +46,11 @@ describe('settlementMessage', () => {
   });
 
   it('uses singular forms and still lists what each person spent', () => {
-    const even = settlementMessage({ people: people.slice(0, 2), expenses: [expense('1', 'Pizza', 1000, 'a', ['a', 'b'])] });
+    const even = settlementMessage({
+      people: people.slice(0, 2),
+      expenses: [expense('1', 'Pizza', 1000, 'a', ['a', 'b'])],
+      currency: 'USD',
+    });
     expect(even).toMatch(new RegExp(`• Beto: ${money('$5.00')}`));
     expect(even).toContain('(1 expense)');
     expect(even).toContain('(1 transfer)');
@@ -55,6 +60,7 @@ describe('settlementMessage', () => {
     const settled = settlementMessage({
       people: people.slice(0, 2),
       expenses: [expense('1', 'Taxi', 1000, 'a', ['a', 'b']), expense('2', 'Bus', 1000, 'b', ['a', 'b'])],
+      currency: 'USD',
     });
     expect(settled).toContain('Everyone’s even');
     expect(settled).not.toContain('To settle up');

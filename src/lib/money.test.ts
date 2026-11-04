@@ -28,6 +28,11 @@ describe('formatCents', () => {
     expect(formatCents(1050)).toMatch(/^\$10[.,]50$/);
     expect(formatCents(-1050)).toMatch(/^-\$10[.,]50$/);
   });
+
+  it('uses a distinct label for pesos and euros', () => {
+    expect(formatCents(1050, 'EUR')).toMatch(/^€10[.,]50$/);
+    expect(formatCents(1050, 'ARS').replace(/\s/g, ' ')).toBe('ARS 10.50');
+  });
 });
 
 describe('isAmountInput', () => {

@@ -6,6 +6,7 @@ import { Card } from './Card';
 
 export function ExpenseForm() {
   const people = useLedgerStore((s) => s.people);
+  const currency = useLedgerStore((s) => s.currency);
   const onAdd = useLedgerStore((s) => s.addExpense);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -49,9 +50,13 @@ export function ExpenseForm() {
                 maxLength={60}
               />
             </label>
-            <label className="field amount">
-              <span>Amount</span>
+            <div className="field amount">
+              <div className="label-line">
+                <label htmlFor="bill-amount">Amount</label>
+                <span className="muted">{currency}</span>
+              </div>
               <input
+                id="bill-amount"
                 value={amount}
                 onChange={(e) => {
                   if (isAmountInput(e.target.value)) setAmount(e.target.value);
@@ -60,7 +65,7 @@ export function ExpenseForm() {
                 inputMode="decimal"
                 aria-invalid={amount !== '' && amountCents === null}
               />
-            </label>
+            </div>
           </div>
 
           <label className="field">

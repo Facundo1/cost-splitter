@@ -27,7 +27,7 @@ describe('ledgerStore', () => {
   it('persists only the data (not the actions) to localStorage', () => {
     store().addPerson('Ana');
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    expect(Object.keys(saved.state).sort()).toEqual(['expenses', 'people']);
+    expect(Object.keys(saved.state).sort()).toEqual(['currency', 'expenses', 'people']);
     expect(saved.state.people[0].name).toBe('Ana');
   });
 
@@ -38,6 +38,12 @@ describe('ledgerStore', () => {
     );
     await useLedgerStore.persist.rehydrate();
     expect(store().people).toEqual([{ id: 'x', name: 'Caro' }]);
+  });
+
+  it('keeps US dollars when an older save has no currency', async () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ state: { people: [], expenses: [] }, version: 0 }));
+    await useLedgerStore.persist.rehydrate();
+    expect(store().currency).toBe('USD');
   });
 
   it('starts empty when saved data is corrupt instead of crashing', async () => {

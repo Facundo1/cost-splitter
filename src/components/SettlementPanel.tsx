@@ -7,11 +7,12 @@ import { Card } from './Card';
 export function SettlementPanel() {
   const people = useLedgerStore((s) => s.people);
   const expenses = useLedgerStore((s) => s.expenses);
+  const currency = useLedgerStore((s) => s.currency);
   const nameOf = useNameOf();
 
   const shares = computeShares(people, expenses);
   const transfers = settle(computeBalances(people, expenses));
-  const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses }));
+  const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses, currency }));
 
   return (
     <Card
@@ -37,7 +38,7 @@ export function SettlementPanel() {
           {transfers.map((t) => (
             <li key={`${t.from}-${t.to}`}>
               <strong>{nameOf(t.from)}</strong> pays <strong>{nameOf(t.to)}</strong>{' '}
-              <span className="money">{formatCents(t.amountCents)}</span>
+              <span className="money">{formatCents(t.amountCents, currency)}</span>
             </li>
           ))}
         </ol>
@@ -49,7 +50,7 @@ export function SettlementPanel() {
           {[...shares].map(([id, cents]) => (
             <li key={id} className="list-item">
               {nameOf(id)}
-              <span className="money">{formatCents(cents)}</span>
+              <span className="money">{formatCents(cents, currency)}</span>
             </li>
           ))}
         </ul>

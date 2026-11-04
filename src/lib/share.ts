@@ -2,12 +2,13 @@ import type { Expense, PersonId } from './types';
 import { computeBalances, computeShares, settle } from './settle';
 
 import type { Ledger } from './ledger';
-import { formatCents } from './money';
 import { totalCents } from './ledger';
+import { formatCents } from './money';
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
-export function settlementMessage({ people, expenses }: Ledger): string {
+export function settlementMessage({ people, expenses, currency = 'USD' }: Ledger): string {
+  const money = (cents: number) => formatCents(cents, currency);
   const nameOf = (id: PersonId) => people.find((p) => p.id === id)?.name ?? '?';
   const total = totalCents(expenses);
   const shares = [...computeShares(people, expenses)];
@@ -19,17 +20,17 @@ export function settlementMessage({ people, expenses }: Ledger): string {
       : `split between ${e.splitAmong.map(nameOf).join(', ')}`;
 
   const lines = [
-    '🧾 *Split It — here’s the bill!*',
+    `🧾 *Split It — here’s the bill!* (${currency})`,
     '',
     `*What we spent* (${plural(expenses.length, 'expense')})`,
     ...expenses.map(
-      (e) => `• ${e.description}: ${formatCents(e.amountCents)} — paid by ${nameOf(e.paidBy)}, ${splitLabel(e)}`,
+      (e) => `• ${e.description}: ${money(e.amountCents)} — paid by ${nameOf(e.paidBy)}, ${splitLabel(e)}`,
     ),
     '',
-    `💰 *Total:* ${formatCents(total)}`,
+    `💰 *Total:* ${money(total)}`,
     '',
     '👥 *What each person spent*',
-    ...shares.map(([id, cents]) => `• ${nameOf(id)}: ${formatCents(cents)}`),
+    ...shares.map(([id, cents]) => `• ${nameOf(id)}: ${money(cents)}`),
     '',
   ];
 
@@ -38,13 +39,13 @@ export function settlementMessage({ people, expenses }: Ledger): string {
   } else {
     lines.push(
       `💸 *To settle up* (${plural(transfers.length, 'transfer')})`,
-      ...transfers.map((t) => `• ${nameOf(t.from)} → ${nameOf(t.to)}: *${formatCents(t.amountCents)}*`),
+      ...transfers.map((t) => `• ${nameOf(t.from)} → ${nameOf(t.to)}: *${money(t.amountCents)}*`),
     );
   }
 
   const topPayer = topPayerOf(expenses);
   if (topPayer) {
-    lines.push('', `🙌 Thanks ${nameOf(topPayer.id)} for covering the most (${formatCents(topPayer.cents)})!`);
+    lines.push('', `🙌 Thanks ${nameOf(topPayer.id)} for covering the most (${money(topPayer.cents)})!`);
   }
   lines.push('', '_Sent from Split It_');
   return lines.join('\n');

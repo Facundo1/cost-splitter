@@ -68,7 +68,11 @@ h2 { margin: 0; font-size: 1.05rem; }
 .row.tight { align-items: center; gap: 4px; }
 .stack { display: grid; gap: 12px; }
 .grow { flex: 1; }
-.amount { width: 120px; }
+.amount { width: 140px; }
+.currency { width: 210px; }
+.toolbar { display: flex; align-items: flex-end; gap: 8px; }
+.label-line { display: flex; justify-content: space-between; gap: 8px; font-size: 0.85rem; color: var(--muted); }
+.label-line label { color: inherit; }
 
 .field { display: grid; gap: 4px; border: 0; padding: 0; margin: 0; min-width: 0; }
 .field > span, legend { font-size: 0.85rem; color: var(--muted); padding: 0; }

@@ -5,6 +5,7 @@ import { Card } from './Card';
 
 export function ExpenseList() {
   const expenses = useLedgerStore((s) => s.expenses);
+  const currency = useLedgerStore((s) => s.currency);
   const onRemove = useLedgerStore((s) => s.removeExpense);
   const nameOf = useNameOf();
 
@@ -12,7 +13,7 @@ export function ExpenseList() {
     <Card
       title={
         <>
-          Bills <span className="muted">· {formatCents(totalCents(expenses))} in total</span>
+          Bills <span className="muted">· {formatCents(totalCents(expenses), currency)} in total</span>
         </>
       }
     >
@@ -26,7 +27,7 @@ export function ExpenseList() {
               </div>
             </div>
             <div className="row tight">
-              <span className="money">{formatCents(e.amountCents)}</span>
+              <span className="money">{formatCents(e.amountCents, currency)}</span>
               <button
                 type="button"
                 className="ghost remove"
