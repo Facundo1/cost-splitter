@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+# Personal notes for the video, not part of the deliverable
+VIDEO_SCRIPT.md
