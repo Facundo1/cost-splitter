@@ -11,6 +11,7 @@ Vite + React 19 + TypeScript SPA, Zustand for state. Splits group expenses and c
 | Task touches… | Read first | Area guide |
 | --- | --- | --- |
 | Money math, balances, settlement algorithm | `src/lib/` | [src/lib/AGENTS.md](src/lib/AGENTS.md) |
+| Live exchange rate | `src/rates/` | [src/lib/AGENTS.md](src/lib/AGENTS.md) |
 | UI, forms, state, persistence | `src/components/`, `src/App.tsx`, `src/store/` | [src/components/AGENTS.md](src/components/AGENTS.md) |
 | CI/CD, lint, build, test config | `.github/workflows/ci.yml`, `vite.config.ts`, `eslint.config.js` | this file (below) |
 | Product decisions, scope, what's out | `DECISIONS.md` | — |

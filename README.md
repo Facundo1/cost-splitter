@@ -34,20 +34,23 @@ npm run dev        # http://localhost:5173
 ```
 src/
 ├── lib/                 # Pure domain logic — no React, fully unit-tested
-│   ├── types.ts         # Person, Expense, Transfer
-│   ├── money.ts         # Parse/format money as integer cents
-│   ├── ledger.ts        # App state + pure operations (business rules)
-│   ├── settle.ts        # Shares, balances + greedy settlement algorithm
-│   └── share.ts         # WhatsApp summary message + wa.me link
-├── components/          # Panels (read the store via selectors) + reusable Card, ConfirmDialog
+│   ├── types.ts         # Person, Expense, Payment, Transfer
+│   ├── money.ts         # Parse/format integer cents, display conversion
+│   ├── currency.ts      # USD, ARS, EUR
+│   ├── ledger.ts        # Group state + pure operations
+│   ├── settle.ts        # Shares, balances, greedy settlement
+│   ├── share.ts         # WhatsApp summary + wa.me link
+│   └── backup.ts        # Save / open a JSON copy of the group
+├── rates/               # ExchangeRateReader. Axios is the HTTP adapter
+├── components/          # Welcome screen, panels, save/open
 ├── store/
 │   └── ledgerStore.ts   # Zustand store (persisted); actions delegate to lib/ledger
-├── App.tsx              # Page layout + reset confirmation
-└── App.test.tsx         # User-flow tests (Testing Library)
+└── App.tsx              # Welcome gate + three-column workspace
 ```
 
-1. **Balances.** Each expense adds its amount to the payer and subtracts an equal share from each participant. Leftover cents (e.g. 100 ÷ 3) are assigned deterministically so balances always sum to exactly zero.
-2. **Settlement.** Repeatedly match the biggest debtor with the biggest creditor. This yields at most *n − 1* transfers. The true minimum is NP-hard; greedy is optimal or very close for group-sized inputs.
+1. **Balances.** Each bill adds its amount to the person who paid and subtracts a share from each person on it. Equal shares are the default. Parts (2 means twice as much) are optional. Leftover cents are assigned deterministically so balances always sum to exactly zero.
+2. **Settlement.** Repeatedly match the person who owes the most with the person who is owed the most. At most *n − 1* payments. The true minimum is NP-hard; greedy is optimal or very close for a normal group. "Mark as paid" records a payment and the list shrinks.
+3. **One currency.** The group picks USD, ARS, or EUR. Switching it renames the amounts; it does not convert bills already added. "Also show in" is a live rate, rounded to the cent, and it is not used to settle.
 
 All money is stored as **integer cents** — no floating-point rounding bugs.
 

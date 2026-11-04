@@ -6,7 +6,7 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | File | Lines | Exports / contents |
 | --- | ---: | --- |
 | `src/App.test.tsx` | 118 | 8 test cases |
-| `src/App.tsx` | 113 | `App` (function) |
+| `src/App.tsx` | 128 | `App` (function) |
 | `src/components/Card.tsx` | 22 | `Card` (function) |
 | `src/components/ConfirmDialog.tsx` | 46 | `ConfirmDialog` (function) |
 | `src/components/ExpenseForm.test.tsx` | 78 | 5 test cases |
@@ -14,7 +14,7 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | `src/components/ExpenseList.tsx` | 54 | `ExpenseList` (function) |
 | `src/components/GroupFile.tsx` | 55 | `GroupFile` (function) |
 | `src/components/PeoplePanel.tsx` | 94 | `PeoplePanel` (function) |
-| `src/components/SettlementPanel.tsx` | 160 | `SettlementPanel` (function) |
+| `src/components/SettlementPanel.tsx` | 158 | `SettlementPanel` (function) |
 | `src/components/WelcomeScreen.tsx` | 49 | `SESSION_KEY` (const), `WelcomeScreen` (function) |
 | `src/lib/backup.test.ts` | 30 | 1 test cases |
 | `src/lib/backup.ts` | 114 | `serializeLedger` (function), `parseLedgerBackup` (function) |

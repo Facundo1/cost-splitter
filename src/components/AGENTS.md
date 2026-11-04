@@ -3,24 +3,26 @@
 React 19 function components, plain CSS (`src/index.css`, CSS variables, dark mode via `prefers-color-scheme`).
 
 ## Data flow
-- Global state lives in a Zustand store (`src/store/ledgerStore.ts`), persisted to localStorage (`persist` middleware, key `split-it:v2`). Each action just delegates to a pure function in `src/lib/ledger.ts` — no business logic in the store or in components.
+- Global state lives in a Zustand store (`src/store/ledgerStore.ts`), persisted to localStorage (`persist` middleware, key `split-it:v2`). Each action delegates to a pure function in `src/lib/ledger.ts`. Missing fields from an older save fall back to the current defaults (currency USD, empty payments).
 - Panels read what they need with selectors (`useLedgerStore((s) => s.people)`), never the whole store. `useNameOf()` resolves ids to names.
 - Component tests seed state with `useLedgerStore.setState(...)`; the test setup resets the store after each test.
 - Derived data (`balances`, `transfers`) is computed on each render from `src/lib/settle.ts` — never stored. No `useMemo`: data is tiny.
-- Components are presentational: they receive data + callbacks (`onAdd`, `onRemove`). No component reads `localStorage` directly.
+- Components are presentational. Exchange rates are the exception: `src/rates/` owns the HTTP call (`ExchangeRateReader` + axios). The UI only asks for a quote. Settlement math never uses that rate.
 
 ## Components
-- `ConfirmDialog` — native `<dialog>` modal for destructive actions (used by Reset). Focus starts on Cancel.
-- `Card` — titled section (`useId` for the accessible heading) with an optional `action` slot on the right of the title. Use it for every new panel.
-- `PeoplePanel` — add/remove people; blocks duplicates (case-insensitive) and removing people referenced by expenses (`lockedIds`).
-- `ExpenseForm` — tracks **excluded** people so new people are included by default; uses `parseAmountToCents`.
-- `ExpenseList` — list + delete + total.
-- `SettlementPanel` — transfers (`<ol aria-label="Transfers">`), "Share on WhatsApp" link (text built in `src/lib/share.ts`) and "Spent per person" (shares, not balances).
+- `WelcomeScreen` — first screen. Start, or start from `sampleDinner()`. Currency chosen here is the group's currency.
+- `ConfirmDialog` — native `<dialog>` for destructive actions. Focus starts on Cancel.
+- `Card` — titled section with an optional `action` slot.
+- `PeoplePanel` — add/remove people. Blocks duplicates and removing anyone who is on a bill or a recorded payment.
+- `ExpenseForm` — add or change a bill. New people are included unless excluded. Equal split is the default; parts are optional.
+- `ExpenseList` — bills, change, delete, total.
+- `SettlementPanel` — who pays whom, what each person spent, mark as paid, copy summary, WhatsApp, optional second currency.
+- `GroupFile` — save or open a JSON copy. Open goes through `parseLedgerBackup` first.
 
 ## Rules
 - New business rules go in `src/lib/ledger.ts` with unit tests, not in components.
 - Don't create a shared component until a pattern appears 3 times.
 - Accessible by default: every input has a label; tests query by role/label, so keep labels stable or update `src/App.test.tsx`.
-- If the stored shape changes, bump `STORAGE_KEY` (no migrations by design).
-- Money display always goes through `formatCents`.
+- A new required field should default in the persist `merge`, not silently break an older save.
+- Money display always goes through `formatCents`. `convertCents` is a hint next to that amount, never a stored amount.
 - Keep styling in `index.css` with existing CSS variables; no CSS-in-JS or frameworks.

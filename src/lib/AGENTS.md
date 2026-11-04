@@ -3,11 +3,14 @@
 Pure TypeScript. The only place where money and settlement are computed. Highest-risk code: a bug here silently produces wrong amounts.
 
 ## Files
-- `types.ts` — `Person`, `Expense`, `Transfer`. `Expense.amountCents` is an integer; `splitAmong` is non-empty.
-- `money.ts` — `parseAmountToCents(input)` (string parsing, accepts `,` or `.`, ≤ 2 decimals, returns `null` if invalid) and `formatCents`.
-- `ledger.ts` — `Ledger` (`{ people, expenses }`, the whole app state) and pure operations: `addPerson`, `removePerson`, `addExpense`, `removeExpense`, `isNameTaken`, `peopleWithExpenses`, `totalCents`. Business rules live here (no duplicate names, can't remove someone with expenses), not in the UI.
-- `share.ts` — `settlementMessage(ledger)` (WhatsApp-formatted summary: expenses, total, what each person spent, transfers, top payer) and `whatsappShareUrl(text)` (`wa.me` link, no API).
-- `settle.ts` — `computeShares(people, expenses)` → what each person consumed; `computeBalances(people, expenses)` → `Map<id, cents>` (paid − share; positive = is owed); `settle(balances)` → `Transfer[]` (greedy, ≤ n−1 transfers).
+- `types.ts` — `Person`, `Expense`, `Payment`, `Transfer`. `Expense.amountCents` is an integer. `splitAmong` is non-empty. Optional `parts` means an unequal split (1 part is an equal share).
+- `money.ts` — `parseAmountToCents` (string parsing, `,` or `.`, ≤ 2 decimals), `formatCents(cents, currency)`, `convertCents` (display only).
+- `ledger.ts` — `Ledger` (people, expenses, payments, currency, group name) and pure operations. Business rules live here, not in the UI.
+- `settle.ts` — shares, balances (expenses, then payments), greedy settlement.
+- `share.ts` — WhatsApp summary and `wa.me` link. No WhatsApp API.
+- `backup.ts` — `serializeLedger` / `parseLedgerBackup`. A bad file returns null and must not be loaded.
+- `currency.ts` — `USD`, `ARS`, `EUR`.
+- `sample.ts` — `sampleDinner()`.
 
 ## Invariants (tests enforce them — keep them true)
 - Balances always sum to exactly 0. Leftover cents go to the first participants in `splitAmong` order.
@@ -20,4 +23,4 @@ Pure TypeScript. The only place where money and settlement are computed. Highest
 - Add/adjust tests in `*.test.ts` next to the file. Prefer invariant/property-style assertions over hard-coded outputs.
 
 ## Likely next changes (see DECISIONS.md)
-Uneven splits → `splitAmong: { personId, weight }[]`; multi-currency → amounts carry a currency code.
+A different currency on each bill, or a shareable link so the group can edit the same ledger. Parts already cover an unequal split without changing `splitAmong`.
