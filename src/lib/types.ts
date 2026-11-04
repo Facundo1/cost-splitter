@@ -11,6 +11,7 @@ export interface Expense {
   amountCents: number;
   paidBy: PersonId;
   splitAmong: PersonId[];
+  parts?: Record<PersonId, number>;
   occurredOn?: string;
 }
 

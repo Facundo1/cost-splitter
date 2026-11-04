@@ -30,6 +30,8 @@ The key split is **`src/lib` (pure functions) vs. `src/components` (React)**. Al
 
 Amounts are **integer cents** end to end. Input like `19.99` is parsed with string operations, not `parseFloat * 100` (which gives `1998.9999…`). Uneven splits (100 / 3) distribute the leftover cent deterministically so nothing is lost or invented.
 
+A bill can also be split in **parts** (`parts` on the expense: 2 means that person pays twice as much as someone with 1). `splitAmong` stays a list of ids. Missing `parts`, or a part of 1, means an equal share, so older saves and the even-split tests stay valid. When the fractions tie, the leftover cent still goes to the earliest person in that list.
+
 ## CI/CD
 
 One GitHub Actions workflow: `npm ci → lint → typecheck → test → build` on every push/PR, then deploy to GitHub Pages on `main`. Concurrency cancels stale runs. Node version comes from `.nvmrc` so local and CI match.
@@ -106,13 +108,12 @@ Goal: any AI assistant gets focused context per area without burning tokens read
 Things I knowingly skipped to stay in the time box, roughly in the order I'd add them:
 
 1. **Shareable ledger link** — encode the state in the URL so the group can *open and edit* the same ledger without a backend (today WhatsApp sharing sends a read-only summary).
-2. **Uneven splits** — percentages / shares / exact amounts. The domain model (`splitAmong`) would become `{ personId, weight }[]`.
-3. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
-4. **Runtime validation of stored data** (e.g. Zod). Today a versioned storage key (`split-it:v2`) is the migration strategy.
-5. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
-6. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
-7. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.
-8. **Backend, accounts, sync, i18n** — out of scope for the problem size.
+2. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
+3. **Runtime validation of stored data** (e.g. Zod). Today a versioned storage key (`split-it:v2`) is the migration strategy.
+4. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
+5. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
+6. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.
+7. **Backend, accounts, sync, i18n** — out of scope for the problem size.
 
 ## Another currency, display only
 

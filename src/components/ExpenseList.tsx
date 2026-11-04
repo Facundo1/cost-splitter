@@ -25,8 +25,10 @@ export function ExpenseList({ onEdit }: { onEdit: (id: string) => void }) {
               <strong>{e.description}</strong>
               <div className="muted small">
                 {nameOf(e.paidBy)} paid
-                {e.occurredOn ? ` · ${formatDay(e.occurredOn)}` : ''} · shared by {e.splitAmong.length}{' '}
-                {e.splitAmong.length === 1 ? 'person' : 'people'}
+                {e.occurredOn ? ` · ${formatDay(e.occurredOn)}` : ''} ·{' '}
+                {e.parts && Object.values(e.parts).some((parts) => parts !== 1)
+                  ? 'shared in parts'
+                  : `shared by ${e.splitAmong.length} ${e.splitAmong.length === 1 ? 'person' : 'people'}`}
               </div>
             </div>
             <div className="row tight">

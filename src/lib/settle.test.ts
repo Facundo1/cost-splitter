@@ -35,6 +35,14 @@ describe('computeBalances', () => {
     expect(Object.fromEntries(balances)).toEqual({ a: 66, b: -33, c: -33 });
   });
 
+  it('gives more of the bill to the person with more parts', () => {
+    const balances = computeBalances(people, [expense('a', 1000, ['a', 'b'])]);
+    const weighted = computeBalances(people, [{ ...expense('a', 1000, ['a', 'b']), parts: { a: 1, b: 3 } }]);
+    expect(Object.fromEntries(balances)).toEqual({ a: 500, b: -500, c: 0 });
+    expect(Object.fromEntries(weighted)).toEqual({ a: 750, b: -750, c: 0 });
+    expect(sum(weighted)).toBe(0);
+  });
+
   it('only charges the people the expense was split among', () => {
     const balances = computeBalances(people, [expense('a', 2000, ['a', 'b'])]);
     expect(Object.fromEntries(balances)).toEqual({ a: 1000, b: -1000, c: 0 });

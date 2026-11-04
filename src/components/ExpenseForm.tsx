@@ -15,6 +15,8 @@ export function ExpenseForm({ editingId = null, onDone = () => {} }: { editingId
   const [amount, setAmount] = useState('');
   const [paidBy, setPaidBy] = useState<PersonId>('');
   const [excluded, setExcluded] = useState<PersonId[]>([]);
+  const [equal, setEqual] = useState(true);
+  const [partCounts, setPartCounts] = useState<Record<string, number>>({});
   const [occurredOn, setOccurredOn] = useState(todayIso);
   const [loadedId, setLoadedId] = useState<string | null>(null);
   const editing = expenses.find((expense) => expense.id === editingId) ?? null;
@@ -25,12 +27,16 @@ export function ExpenseForm({ editingId = null, onDone = () => {} }: { editingId
     setAmount(editing ? centsToInput(editing.amountCents) : '');
     setPaidBy(editing?.paidBy ?? '');
     setExcluded(editing ? people.filter((person) => !editing.splitAmong.includes(person.id)).map((person) => person.id) : []);
+    setEqual(!editing?.parts || Object.values(editing.parts).every((parts) => parts === 1));
+    setPartCounts(editing?.parts ?? {});
     setOccurredOn(editing?.occurredOn ?? todayIso());
   }
 
   const amountCents = parseAmountToCents(amount);
   const payer = people.find((p) => p.id === paidBy)?.id ?? people[0]?.id;
   const splitAmong = people.map((p) => p.id).filter((id) => !excluded.includes(id));
+  const parts = Object.fromEntries(splitAmong.map((id) => [id, equal ? 1 : Math.min(20, Math.max(1, partCounts[id] ?? 1))]));
+  const uneven = splitAmong.some((id) => (parts[id] ?? 1) !== 1);
 
   const toggle = (id: PersonId) =>
     setExcluded((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
@@ -38,7 +44,7 @@ export function ExpenseForm({ editingId = null, onDone = () => {} }: { editingId
   const trimmed = description.trim();
   const draft =
     trimmed && amountCents && payer && splitAmong.length > 0 && /^\d{4}-\d{2}-\d{2}$/.test(occurredOn)
-      ? { description: trimmed, amountCents, paidBy: payer, splitAmong, occurredOn }
+      ? { description: trimmed, amountCents, paidBy: payer, splitAmong, occurredOn, ...(uneven ? { parts } : {}) }
       : null;
 
   function handleSubmit(e: FormEvent) {
@@ -119,6 +125,34 @@ export function ExpenseForm({ editingId = null, onDone = () => {} }: { editingId
               ))}
             </div>
           </fieldset>
+
+          <label className="check">
+            <input type="checkbox" checked={equal} onChange={() => setEqual((value) => !value)} />
+            Split it equally
+          </label>
+          {!equal && (
+            <div className="stack">
+              <p className="muted small">2 parts means that person pays twice as much as someone with 1.</p>
+              {people
+                .filter((person) => !excluded.includes(person.id))
+                .map((person) => (
+                  <label key={person.id} className="field">
+                    <span>Parts for {person.name}</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={partCounts[person.id] ?? 1}
+                      onChange={(event) => {
+                        const next = Number(event.target.value);
+                        if (!Number.isInteger(next) || next < 1 || next > 20) return;
+                        setPartCounts((current) => ({ ...current, [person.id]: next }));
+                      }}
+                    />
+                  </label>
+                ))}
+            </div>
+          )}
 
           <div className="row">
             <button type="submit" disabled={!draft}>

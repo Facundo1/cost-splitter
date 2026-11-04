@@ -15,10 +15,15 @@ export function settlementMessage({ people, expenses, currency = 'USD', groupNam
   const shares = [...computeShares(people, expenses)];
   const transfers = settle(computeBalances(people, expenses));
 
-  const splitLabel = (e: Expense) =>
-    e.splitAmong.length === people.length
+  const splitLabel = (e: Expense) => {
+    const uneven = e.splitAmong.some((id) => (e.parts?.[id] ?? 1) !== 1);
+    if (uneven) {
+      return `split in parts (${e.splitAmong.map((id) => `${nameOf(id)} ${e.parts?.[id] ?? 1}`).join(', ')})`;
+    }
+    return e.splitAmong.length === people.length
       ? 'split between everyone'
       : `split between ${e.splitAmong.map(nameOf).join(', ')}`;
+  };
 
   const lines = [
     groupName.trim() ? `🧾 *${groupName.trim()}* (${currency})` : `🧾 *Split It — here’s the bill!* (${currency})`,

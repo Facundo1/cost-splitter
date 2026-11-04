@@ -1,9 +1,33 @@
 import type { Expense, Person, PersonId, Transfer } from './types';
 
-function splitExpense({ amountCents, splitAmong }: Expense): [PersonId, number][] {
-  const share = Math.floor(amountCents / splitAmong.length);
-  const remainder = amountCents % splitAmong.length;
-  return splitAmong.map((id, i) => [id, share + (i < remainder ? 1 : 0)]);
+function partsOf(expense: Expense, id: PersonId): number {
+  const parts = expense.parts?.[id];
+  return typeof parts === 'number' && Number.isInteger(parts) && parts > 0 ? parts : 1;
+}
+
+function splitExpense(expense: Expense): [PersonId, number][] {
+  const weights = expense.splitAmong.map((id) => ({ id, parts: partsOf(expense, id) }));
+  const totalParts = weights.reduce((sum, row) => sum + row.parts, 0);
+  if (weights.length === 0 || totalParts <= 0) return [];
+
+  const rows = weights.map((row) => {
+    const raw = (expense.amountCents * row.parts) / totalParts;
+    return { id: row.id, cents: Math.floor(raw), rest: raw - Math.floor(raw) };
+  });
+  let leftover = expense.amountCents - rows.reduce((sum, row) => sum + row.cents, 0);
+  const order = rows
+    .map((row, index) => ({ index, rest: row.rest }))
+    .sort((left, right) => right.rest - left.rest || left.index - right.index);
+
+  for (let step = 0; leftover > 0 && order.length > 0; step += 1) {
+    const next = order[step % order.length];
+    const row = next ? rows[next.index] : undefined;
+    if (!row) break;
+    row.cents += 1;
+    leftover -= 1;
+  }
+
+  return rows.map((row) => [row.id, row.cents]);
 }
 
 export function computeShares(people: Person[], expenses: Expense[]): Map<PersonId, number> {
