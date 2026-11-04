@@ -21,6 +21,7 @@ describe('settlementMessage', () => {
   const ledger: Ledger = {
     people,
     currency: 'USD',
+    groupName: '',
     expenses: [expense('1', 'Dinner', 3000, 'a'), expense('2', 'Drinks', 1000, 'b', ['a', 'b'])],
   };
   const message = settlementMessage(ledger);
@@ -29,6 +30,7 @@ describe('settlementMessage', () => {
     expect(message).toMatch(new RegExp(`• Dinner: ${money('$30.00')} — paid by Ana, split between everyone`));
     expect(message).toMatch(new RegExp(`• Drinks: ${money('$10.00')} — paid by Beto, split between Ana, Beto`));
     expect(message).toContain('(2 expenses)');
+    expect(settlementMessage({ ...ledger, groupName: 'Saturday dinner' })).toContain('*Saturday dinner* (USD)');
   });
 
   it('shows the total and what each person spent, without an average', () => {
@@ -50,6 +52,7 @@ describe('settlementMessage', () => {
       people: people.slice(0, 2),
       expenses: [expense('1', 'Pizza', 1000, 'a', ['a', 'b'])],
       currency: 'USD',
+      groupName: '',
     });
     expect(even).toMatch(new RegExp(`• Beto: ${money('$5.00')}`));
     expect(even).toContain('(1 expense)');
@@ -61,6 +64,7 @@ describe('settlementMessage', () => {
       people: people.slice(0, 2),
       expenses: [expense('1', 'Taxi', 1000, 'a', ['a', 'b']), expense('2', 'Bus', 1000, 'b', ['a', 'b'])],
       currency: 'USD',
+      groupName: '',
     });
     expect(settled).toContain('Everyone’s even');
     expect(settled).not.toContain('To settle up');

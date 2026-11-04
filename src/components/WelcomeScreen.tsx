@@ -3,7 +3,7 @@ import { useLedgerStore } from '../store/ledgerStore';
 
 export const SESSION_KEY = 'split-it:started';
 
-export function WelcomeScreen({ onStart }: { onStart: () => void }) {
+export function WelcomeScreen({ onStart, onSample }: { onStart: () => void; onSample: () => void }) {
   const currency = useLedgerStore((s) => s.currency);
   const setCurrency = useLedgerStore((s) => s.setCurrency);
 
@@ -35,9 +35,14 @@ export function WelcomeScreen({ onStart }: { onStart: () => void }) {
         </select>
       </label>
       <p className="muted small">You can change this later. It names the money. It does not convert bills you already added.</p>
-      <button type="button" onClick={onStart}>
-        Start
-      </button>
+      <div className="row">
+        <button type="button" onClick={onStart}>
+          Start
+        </button>
+        <button type="button" className="ghost" onClick={onSample}>
+          Start with a sample dinner
+        </button>
+      </div>
     </main>
   );
 }

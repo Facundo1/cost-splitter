@@ -5,12 +5,26 @@ export interface Ledger {
   people: Person[];
   expenses: Expense[];
   currency: CurrencyCode;
+  groupName: string;
 }
 
-export const EMPTY_LEDGER: Ledger = { people: [], expenses: [], currency: 'USD' };
+export const EMPTY_LEDGER: Ledger = { people: [], expenses: [], currency: 'USD', groupName: '' };
 
 export function setCurrency(ledger: Ledger, currency: CurrencyCode): Ledger {
   return ledger.currency === currency ? ledger : { ...ledger, currency };
+}
+
+export function setGroupName(ledger: Ledger, groupName: string): Ledger {
+  return ledger.groupName === groupName ? ledger : { ...ledger, groupName };
+}
+
+export function loadLedger(ledger: Ledger): Ledger {
+  return {
+    people: ledger.people,
+    expenses: ledger.expenses,
+    currency: ledger.currency,
+    groupName: ledger.groupName,
+  };
 }
 
 export function isNameTaken(people: Person[], name: string): boolean {

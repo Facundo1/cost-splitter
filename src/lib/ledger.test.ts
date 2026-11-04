@@ -9,12 +9,20 @@ import {
   removeExpense,
   removePerson,
   setCurrency,
+  setGroupName,
   totalCents,
   type Ledger,
 } from './ledger';
 
 const withPeople = (...names: string[]) => names.reduce(addPerson, EMPTY_LEDGER);
 const idOf = (ledger: Ledger, name: string) => ledger.people.find((p) => p.name === name)!.id;
+
+describe('setGroupName', () => {
+  it('stores the name the user is still typing', () => {
+    expect(setGroupName(EMPTY_LEDGER, 'Trip ').groupName).toBe('Trip ');
+    expect(setGroupName(EMPTY_LEDGER, '')).toBe(EMPTY_LEDGER);
+  });
+});
 
 describe('setCurrency', () => {
   it('keeps people and bills and ignores the same currency', () => {

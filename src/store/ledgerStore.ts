@@ -6,8 +6,10 @@ import {
   addExpense,
   addPerson,
   removeExpense,
+  loadLedger,
   removePerson,
   setCurrency,
+  setGroupName,
   type Ledger,
 } from '../lib/ledger';
 import type { Expense, PersonId } from '../lib/types';
@@ -18,6 +20,8 @@ interface LedgerActions {
   addExpense: (expense: Omit<Expense, 'id'>) => void;
   removeExpense: (id: string) => void;
   setCurrency: (currency: CurrencyCode) => void;
+  setGroupName: (groupName: string) => void;
+  load: (ledger: Ledger) => void;
   reset: () => void;
 }
 
@@ -32,17 +36,20 @@ export const useLedgerStore = create<Ledger & LedgerActions>()(
       addExpense: (expense) => set((s) => addExpense(s, expense)),
       removeExpense: (id) => set((s) => removeExpense(s, id)),
       setCurrency: (currency) => set((s) => setCurrency(s, currency)),
+      setGroupName: (groupName) => set((s) => setGroupName(s, groupName)),
+      load: (ledger) => set(loadLedger(ledger)),
       reset: () => set(EMPTY_LEDGER),
     }),
     {
       name: STORAGE_KEY,
-      partialize: ({ people, expenses, currency }) => ({ people, expenses, currency }),
+      partialize: ({ people, expenses, currency, groupName }) => ({ people, expenses, currency, groupName }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<Ledger>;
         return {
           ...current,
           ...saved,
           currency: isCurrencyCode(saved.currency) ? saved.currency : current.currency,
+          groupName: typeof saved.groupName === 'string' ? saved.groupName : current.groupName,
         };
       },
     },

@@ -7,7 +7,7 @@ import { formatCents } from './money';
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
-export function settlementMessage({ people, expenses, currency = 'USD' }: Ledger): string {
+export function settlementMessage({ people, expenses, currency = 'USD', groupName = '' }: Ledger): string {
   const money = (cents: number) => formatCents(cents, currency);
   const nameOf = (id: PersonId) => people.find((p) => p.id === id)?.name ?? '?';
   const total = totalCents(expenses);
@@ -20,7 +20,7 @@ export function settlementMessage({ people, expenses, currency = 'USD' }: Ledger
       : `split between ${e.splitAmong.map(nameOf).join(', ')}`;
 
   const lines = [
-    `🧾 *Split It — here’s the bill!* (${currency})`,
+    groupName.trim() ? `🧾 *${groupName.trim()}* (${currency})` : `🧾 *Split It — here’s the bill!* (${currency})`,
     '',
     `*What we spent* (${plural(expenses.length, 'expense')})`,
     ...expenses.map(

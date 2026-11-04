@@ -27,7 +27,7 @@ describe('ledgerStore', () => {
   it('persists only the data (not the actions) to localStorage', () => {
     store().addPerson('Ana');
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    expect(Object.keys(saved.state).sort()).toEqual(['currency', 'expenses', 'people']);
+    expect(Object.keys(saved.state).sort()).toEqual(['currency', 'expenses', 'groupName', 'people']);
     expect(saved.state.people[0].name).toBe('Ana');
   });
 

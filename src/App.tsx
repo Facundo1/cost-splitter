@@ -6,6 +6,7 @@ import { PeoplePanel } from './components/PeoplePanel';
 import { SettlementPanel } from './components/SettlementPanel';
 import { SESSION_KEY, WelcomeScreen } from './components/WelcomeScreen';
 import { CURRENCIES, CURRENCY_NAME, isCurrencyCode } from './lib/currency';
+import { sampleDinner } from './lib/sample';
 import { useLedgerStore } from './store/ledgerStore';
 
 export default function App() {
@@ -13,16 +14,25 @@ export default function App() {
   const hasExpenses = useLedgerStore((s) => s.expenses.length > 0);
   const currency = useLedgerStore((s) => s.currency);
   const setCurrency = useLedgerStore((s) => s.setCurrency);
+  const groupName = useLedgerStore((s) => s.groupName);
+  const setGroupName = useLedgerStore((s) => s.setGroupName);
+  const load = useLedgerStore((s) => s.load);
   const reset = useLedgerStore((s) => s.reset);
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [started, setStarted] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
 
+  const start = () => {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    setStarted(true);
+  };
+
   if (!started) {
     return (
       <WelcomeScreen
-        onStart={() => {
-          sessionStorage.setItem(SESSION_KEY, '1');
-          setStarted(true);
+        onStart={start}
+        onSample={() => {
+          load(sampleDinner());
+          start();
         }}
       />
     );
@@ -33,7 +43,16 @@ export default function App() {
       <header className="header">
         <div>
           <h1>🧾 Split It</h1>
-          <p className="muted">Add the people, add what someone paid, and see who should pay whom.</p>
+          <label className="field">
+            <span className="sr-only">Group name</span>
+            <input
+              value={groupName}
+              onChange={(event) => setGroupName(event.target.value)}
+              placeholder="Name this group"
+              maxLength={40}
+              aria-label="Group name"
+            />
+          </label>
         </div>
         <div className="toolbar">
           <label className="field currency">

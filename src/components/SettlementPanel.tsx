@@ -12,6 +12,7 @@ export function SettlementPanel() {
   const people = useLedgerStore((s) => s.people);
   const expenses = useLedgerStore((s) => s.expenses);
   const currency = useLedgerStore((s) => s.currency);
+  const groupName = useLedgerStore((s) => s.groupName);
   const nameOf = useNameOf();
   const [display, setDisplay] = useState<CurrencyCode | ''>('');
   const shown = display === currency ? '' : display;
@@ -20,7 +21,7 @@ export function SettlementPanel() {
 
   const shares = computeShares(people, expenses);
   const transfers = settle(computeBalances(people, expenses));
-  const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses, currency }));
+  const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses, currency, groupName }));
   const other = (cents: number) => (quote ? formatCents(convertCents(cents, quote.rate), quote.to) : null);
 
   return (

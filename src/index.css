@@ -50,7 +50,8 @@ body {
 .lede { margin: 0; font-size: 1.1rem; }
 .eyebrow { margin: 0; font-weight: 700; color: var(--accent); }
 .steps { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; }
-.welcome button { justify-self: start; padding: 12px 28px; font-size: 1.05rem; }
+.welcome .row button:first-child { padding: 12px 28px; font-size: 1.05rem; }
+.welcome .ghost { padding: 12px 16px; }
 
 .container {
   max-width: 640px;
