@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   EMPTY_LEDGER,
   addExpense,
+  addPayment,
   addPerson,
   isNameInput,
   isNameTaken,
@@ -115,6 +116,14 @@ describe('expenses', () => {
       { id: '1', description: 'x', amountCents: 1, paidBy: 'a', splitAmong: ['b', 'c'] },
     ]);
     expect([...ids].sort()).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('addPayment', () => {
+  it('ignores a payment from someone to themself', () => {
+    const ledger = withPeople('Ana');
+    const ana = idOf(ledger, 'Ana');
+    expect(addPayment(ledger, { from: ana, to: ana, amountCents: 100 })).toBe(ledger);
   });
 });
 

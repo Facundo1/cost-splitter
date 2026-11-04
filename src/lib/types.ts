@@ -15,6 +15,13 @@ export interface Expense {
   occurredOn?: string;
 }
 
+export interface Payment {
+  id: string;
+  from: PersonId;
+  to: PersonId;
+  amountCents: number;
+}
+
 export interface Transfer {
   from: PersonId;
   to: PersonId;

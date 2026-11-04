@@ -8,10 +8,11 @@ import { ConfirmDialog } from './ConfirmDialog';
 export function PeoplePanel() {
   const people = useLedgerStore((s) => s.people);
   const expenses = useLedgerStore((s) => s.expenses);
+  const payments = useLedgerStore((s) => s.payments);
   const onAdd = useLedgerStore((s) => s.addPerson);
   const onRemove = useLedgerStore((s) => s.removePerson);
   const load = useLedgerStore((s) => s.load);
-  const lockedIds = peopleWithExpenses(expenses);
+  const lockedIds = peopleWithExpenses(expenses, payments);
 
   const [name, setName] = useState('');
   const [confirmingSample, setConfirmingSample] = useState(false);

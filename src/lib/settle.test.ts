@@ -43,6 +43,15 @@ describe('computeBalances', () => {
     expect(sum(weighted)).toBe(0);
   });
 
+  it('treats a recorded payment as money already handed over', () => {
+    const before = computeBalances(people, [expense('a', 3000)]);
+    const after = computeBalances(people, [expense('a', 3000)], [{ id: 'p', from: 'b', to: 'a', amountCents: 1000 }]);
+    expect(sum(after)).toBe(0);
+    expect(after.get('b')).toBe((before.get('b') ?? 0) + 1000);
+    expect(after.get('a')).toBe((before.get('a') ?? 0) - 1000);
+    expect(settle(after)).toEqual([{ from: 'c', to: 'a', amountCents: 1000 }]);
+  });
+
   it('only charges the people the expense was split among', () => {
     const balances = computeBalances(people, [expense('a', 2000, ['a', 'b'])]);
     expect(Object.fromEntries(balances)).toEqual({ a: 1000, b: -1000, c: 0 });

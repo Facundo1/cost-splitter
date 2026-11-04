@@ -4,7 +4,9 @@ import { isCurrencyCode, type CurrencyCode } from '../lib/currency';
 import {
   EMPTY_LEDGER,
   addExpense,
+  addPayment,
   addPerson,
+  removePayment,
   updateExpense,
   removeExpense,
   loadLedger,
@@ -13,7 +15,7 @@ import {
   setGroupName,
   type Ledger,
 } from '../lib/ledger';
-import type { Expense, PersonId } from '../lib/types';
+import type { Expense, Payment, PersonId } from '../lib/types';
 
 interface LedgerActions {
   addPerson: (name: string) => void;
@@ -21,6 +23,8 @@ interface LedgerActions {
   addExpense: (expense: Omit<Expense, 'id'>) => void;
   updateExpense: (id: string, expense: Omit<Expense, 'id'>) => void;
   removeExpense: (id: string) => void;
+  addPayment: (payment: Omit<Payment, 'id'>) => void;
+  removePayment: (id: string) => void;
   setCurrency: (currency: CurrencyCode) => void;
   setGroupName: (groupName: string) => void;
   load: (ledger: Ledger) => void;
@@ -38,6 +42,8 @@ export const useLedgerStore = create<Ledger & LedgerActions>()(
       addExpense: (expense) => set((s) => addExpense(s, expense)),
       updateExpense: (id, expense) => set((s) => updateExpense(s, id, expense)),
       removeExpense: (id) => set((s) => removeExpense(s, id)),
+      addPayment: (payment) => set((s) => addPayment(s, payment)),
+      removePayment: (id) => set((s) => removePayment(s, id)),
       setCurrency: (currency) => set((s) => setCurrency(s, currency)),
       setGroupName: (groupName) => set((s) => setGroupName(s, groupName)),
       load: (ledger) => set(loadLedger(ledger)),
@@ -45,7 +51,13 @@ export const useLedgerStore = create<Ledger & LedgerActions>()(
     }),
     {
       name: STORAGE_KEY,
-      partialize: ({ people, expenses, currency, groupName }) => ({ people, expenses, currency, groupName }),
+      partialize: ({ people, expenses, currency, groupName, payments }) => ({
+        people,
+        expenses,
+        currency,
+        groupName,
+        payments,
+      }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<Ledger>;
         return {
@@ -53,6 +65,7 @@ export const useLedgerStore = create<Ledger & LedgerActions>()(
           ...saved,
           currency: isCurrencyCode(saved.currency) ? saved.currency : current.currency,
           groupName: typeof saved.groupName === 'string' ? saved.groupName : current.groupName,
+          payments: Array.isArray(saved.payments) ? saved.payments : current.payments,
         };
       },
     },

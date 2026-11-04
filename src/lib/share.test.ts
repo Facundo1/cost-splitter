@@ -22,6 +22,7 @@ describe('settlementMessage', () => {
     people,
     currency: 'USD',
     groupName: '',
+    payments: [],
     expenses: [expense('1', 'Dinner', 3000, 'a'), expense('2', 'Drinks', 1000, 'b', ['a', 'b'])],
   };
   const message = settlementMessage(ledger);
@@ -53,6 +54,7 @@ describe('settlementMessage', () => {
       expenses: [expense('1', 'Pizza', 1000, 'a', ['a', 'b'])],
       currency: 'USD',
       groupName: '',
+      payments: [],
     });
     expect(even).toMatch(new RegExp(`• Beto: ${money('$5.00')}`));
     expect(even).toContain('(1 expense)');
@@ -65,6 +67,7 @@ describe('settlementMessage', () => {
       expenses: [expense('1', 'Taxi', 1000, 'a', ['a', 'b']), expense('2', 'Bus', 1000, 'b', ['a', 'b'])],
       currency: 'USD',
       groupName: '',
+      payments: [],
     });
     expect(settled).toContain('Everyone’s even');
     expect(settled).not.toContain('To settle up');

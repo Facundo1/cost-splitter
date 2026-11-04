@@ -1,14 +1,15 @@
 import type { CurrencyCode } from './currency';
-import type { Expense, Person, PersonId } from './types';
+import type { Expense, Payment, Person, PersonId } from './types';
 
 export interface Ledger {
   people: Person[];
   expenses: Expense[];
   currency: CurrencyCode;
   groupName: string;
+  payments: Payment[];
 }
 
-export const EMPTY_LEDGER: Ledger = { people: [], expenses: [], currency: 'USD', groupName: '' };
+export const EMPTY_LEDGER: Ledger = { people: [], expenses: [], currency: 'USD', groupName: '', payments: [] };
 
 export function setCurrency(ledger: Ledger, currency: CurrencyCode): Ledger {
   return ledger.currency === currency ? ledger : { ...ledger, currency };
@@ -24,6 +25,7 @@ export function loadLedger(ledger: Ledger): Ledger {
     expenses: ledger.expenses,
     currency: ledger.currency,
     groupName: ledger.groupName,
+    payments: ledger.payments,
   };
 }
 
@@ -40,8 +42,11 @@ export function isNameInput(input: string): boolean {
   return /^[\p{L}\p{M} '.-]*$/u.test(input);
 }
 
-export function peopleWithExpenses(expenses: Expense[]): Set<PersonId> {
-  return new Set(expenses.flatMap((e) => [e.paidBy, ...e.splitAmong]));
+export function peopleWithExpenses(expenses: Expense[], payments: Payment[] = []): Set<PersonId> {
+  return new Set([
+    ...expenses.flatMap((expense) => [expense.paidBy, ...expense.splitAmong]),
+    ...payments.flatMap((payment) => [payment.from, payment.to]),
+  ]);
 }
 
 export function addPerson(ledger: Ledger, name: string): Ledger {
@@ -69,4 +74,13 @@ export function updateExpense(ledger: Ledger, id: string, expense: Omit<Expense,
 
 export function removeExpense(ledger: Ledger, id: string): Ledger {
   return { ...ledger, expenses: ledger.expenses.filter((e) => e.id !== id) };
+}
+
+export function addPayment(ledger: Ledger, payment: Omit<Payment, 'id'>): Ledger {
+  if (payment.amountCents <= 0 || payment.from === payment.to) return ledger;
+  return { ...ledger, payments: [...ledger.payments, { ...payment, id: crypto.randomUUID() }] };
+}
+
+export function removePayment(ledger: Ledger, id: string): Ledger {
+  return { ...ledger, payments: ledger.payments.filter((payment) => payment.id !== id) };
 }

@@ -13,6 +13,9 @@ export function SettlementPanel() {
   const expenses = useLedgerStore((s) => s.expenses);
   const currency = useLedgerStore((s) => s.currency);
   const groupName = useLedgerStore((s) => s.groupName);
+  const payments = useLedgerStore((s) => s.payments);
+  const addPayment = useLedgerStore((s) => s.addPayment);
+  const removePayment = useLedgerStore((s) => s.removePayment);
   const nameOf = useNameOf();
   const [display, setDisplay] = useState<CurrencyCode | ''>('');
   const shown = display === currency ? '' : display;
@@ -20,8 +23,8 @@ export function SettlementPanel() {
   const note = rateNote(status, quote?.asOf, currency);
 
   const shares = computeShares(people, expenses);
-  const transfers = settle(computeBalances(people, expenses));
-  const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses, currency, groupName }));
+  const transfers = settle(computeBalances(people, expenses, payments));
+  const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses, currency, groupName, payments }));
   const other = (cents: number) => (quote ? formatCents(convertCents(cents, quote.rate), quote.to) : null);
 
   return (
@@ -66,12 +69,40 @@ export function SettlementPanel() {
         <ol className="transfers" aria-label="Who pays whom">
           {transfers.map((t) => (
             <li key={`${t.from}-${t.to}`}>
-              <strong>{nameOf(t.from)}</strong> pays <strong>{nameOf(t.to)}</strong>{' '}
-              <span className="money">{formatCents(t.amountCents, currency)}</span>
-              {other(t.amountCents) && <span className="muted small"> · about {other(t.amountCents)}</span>}
+              <span>
+                <strong>{nameOf(t.from)}</strong> pays <strong>{nameOf(t.to)}</strong>{' '}
+                <span className="money">{formatCents(t.amountCents, currency)}</span>
+                {other(t.amountCents) && <span className="muted small"> · about {other(t.amountCents)}</span>}
+              </span>
+              <button
+                type="button"
+                className="ghost"
+                onClick={() => addPayment({ from: t.from, to: t.to, amountCents: t.amountCents })}
+              >
+                Mark as paid
+              </button>
             </li>
           ))}
         </ol>
+      )}
+
+      {payments.length > 0 && (
+        <>
+          <h3 className="subhead">Already paid</h3>
+          <ul className="list">
+            {payments.map((payment) => (
+              <li key={payment.id} className="list-item">
+                <span>
+                  {nameOf(payment.from)} paid {nameOf(payment.to)}{' '}
+                  <span className="money">{formatCents(payment.amountCents, currency)}</span>
+                </span>
+                <button type="button" className="ghost" onClick={() => removePayment(payment.id)}>
+                  Undo
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <details>

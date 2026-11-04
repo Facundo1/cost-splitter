@@ -25,5 +25,6 @@ export function sampleDinner(): Ledger {
         splitAmong: ['ana', 'beto'],
       },
     ],
+    payments: [],
   };
 }

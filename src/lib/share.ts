@@ -8,12 +8,12 @@ import { formatCents } from './money';
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
-export function settlementMessage({ people, expenses, currency = 'USD', groupName = '' }: Ledger): string {
+export function settlementMessage({ people, expenses, currency = 'USD', groupName = '', payments = [] }: Ledger): string {
   const money = (cents: number) => formatCents(cents, currency);
   const nameOf = (id: PersonId) => people.find((p) => p.id === id)?.name ?? '?';
   const total = totalCents(expenses);
   const shares = [...computeShares(people, expenses)];
-  const transfers = settle(computeBalances(people, expenses));
+  const transfers = settle(computeBalances(people, expenses, payments));
 
   const splitLabel = (e: Expense) => {
     const uneven = e.splitAmong.some((id) => (e.parts?.[id] ?? 1) !== 1);
@@ -40,6 +40,14 @@ export function settlementMessage({ people, expenses, currency = 'USD', groupNam
     ...shares.map(([id, cents]) => `• ${nameOf(id)}: ${money(cents)}`),
     '',
   ];
+
+  if (payments.length > 0) {
+    lines.push(
+      `✅ *Already paid* (${plural(payments.length, 'payment')})`,
+      ...payments.map((payment) => `• ${nameOf(payment.from)} paid ${nameOf(payment.to)}: ${money(payment.amountCents)}`),
+      '',
+    );
+  }
 
   if (transfers.length === 0) {
     lines.push('✅ *Everyone’s even* — nothing to transfer!');
