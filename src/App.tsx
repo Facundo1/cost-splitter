@@ -19,6 +19,8 @@ export default function App() {
   const load = useLedgerStore((s) => s.load);
   const reset = useLedgerStore((s) => s.reset);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const editingId = useLedgerStore((s) => (s.expenses.some((expense) => expense.id === selectedId) ? selectedId : null));
   const [started, setStarted] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
 
   const start = () => {
@@ -79,10 +81,10 @@ export default function App() {
       </header>
 
       <PeoplePanel />
-      <ExpenseForm />
+      <ExpenseForm editingId={editingId} onDone={() => setSelectedId(null)} />
       {hasExpenses && (
         <>
-          <ExpenseList />
+          <ExpenseList onEdit={setSelectedId} />
           <SettlementPanel />
         </>
       )}
@@ -94,6 +96,7 @@ export default function App() {
         confirmLabel="Erase everything"
         onConfirm={() => {
           reset();
+          setSelectedId(null);
           setConfirmingReset(false);
         }}
         onCancel={() => setConfirmingReset(false)}

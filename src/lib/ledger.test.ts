@@ -9,6 +9,7 @@ import {
   removeExpense,
   removePerson,
   setCurrency,
+  updateExpense,
   setGroupName,
   totalCents,
   type Ledger,
@@ -91,6 +92,22 @@ describe('expenses', () => {
     const [expense] = ledger.expenses;
     expect(expense).toMatchObject({ description: 'Taxi', amountCents: 500 });
     expect(removeExpense(ledger, expense!.id).expenses).toEqual([]);
+  });
+
+  it('updates one bill and leaves the others', () => {
+    let ledger = withPeople('Ana', 'Beto');
+    const ana = idOf(ledger, 'Ana');
+    ledger = addExpense(ledger, { description: 'Taxi', amountCents: 500, paidBy: ana, splitAmong: [ana] });
+    const id = ledger.expenses[0]!.id;
+    const next = updateExpense(ledger, id, {
+      description: 'Taxi home',
+      amountCents: 800,
+      paidBy: ana,
+      splitAmong: [ana],
+      occurredOn: '2026-11-04',
+    });
+    expect(next.expenses[0]).toMatchObject({ id, description: 'Taxi home', amountCents: 800, occurredOn: '2026-11-04' });
+    expect(updateExpense(ledger, 'missing', { description: 'x', amountCents: 1, paidBy: ana, splitAmong: [ana] })).toBe(ledger);
   });
 
   it('peopleWithExpenses includes payers and participants', () => {

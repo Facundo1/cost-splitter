@@ -5,6 +5,7 @@ import {
   EMPTY_LEDGER,
   addExpense,
   addPerson,
+  updateExpense,
   removeExpense,
   loadLedger,
   removePerson,
@@ -18,6 +19,7 @@ interface LedgerActions {
   addPerson: (name: string) => void;
   removePerson: (id: PersonId) => void;
   addExpense: (expense: Omit<Expense, 'id'>) => void;
+  updateExpense: (id: string, expense: Omit<Expense, 'id'>) => void;
   removeExpense: (id: string) => void;
   setCurrency: (currency: CurrencyCode) => void;
   setGroupName: (groupName: string) => void;
@@ -34,6 +36,7 @@ export const useLedgerStore = create<Ledger & LedgerActions>()(
       addPerson: (name) => set((s) => addPerson(s, name)),
       removePerson: (id) => set((s) => removePerson(s, id)),
       addExpense: (expense) => set((s) => addExpense(s, expense)),
+      updateExpense: (id, expense) => set((s) => updateExpense(s, id, expense)),
       removeExpense: (id) => set((s) => removeExpense(s, id)),
       setCurrency: (currency) => set((s) => setCurrency(s, currency)),
       setGroupName: (groupName) => set((s) => setGroupName(s, groupName)),

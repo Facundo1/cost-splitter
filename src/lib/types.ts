@@ -11,6 +11,7 @@ export interface Expense {
   amountCents: number;
   paidBy: PersonId;
   splitAmong: PersonId[];
+  occurredOn?: string;
 }
 
 export interface Transfer {

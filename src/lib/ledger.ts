@@ -59,6 +59,14 @@ export function addExpense(ledger: Ledger, expense: Omit<Expense, 'id'>): Ledger
   return { ...ledger, expenses: [...ledger.expenses, { ...expense, id: crypto.randomUUID() }] };
 }
 
+export function updateExpense(ledger: Ledger, id: string, expense: Omit<Expense, 'id'>): Ledger {
+  if (!ledger.expenses.some((item) => item.id === id)) return ledger;
+  return {
+    ...ledger,
+    expenses: ledger.expenses.map((item) => (item.id === id ? { ...expense, id } : item)),
+  };
+}
+
 export function removeExpense(ledger: Ledger, id: string): Ledger {
   return { ...ledger, expenses: ledger.expenses.filter((e) => e.id !== id) };
 }

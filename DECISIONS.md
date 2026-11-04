@@ -106,14 +106,13 @@ Goal: any AI assistant gets focused context per area without burning tokens read
 Things I knowingly skipped to stay in the time box, roughly in the order I'd add them:
 
 1. **Shareable ledger link** — encode the state in the URL so the group can *open and edit* the same ledger without a backend (today WhatsApp sharing sends a read-only summary).
-2. **Edit an expense** — today you delete and re-add.
-3. **Uneven splits** — percentages / shares / exact amounts. The domain model (`splitAmong`) would become `{ personId, weight }[]`.
-4. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
-5. **Runtime validation of stored data** (e.g. Zod). Today a versioned storage key (`split-it:v2`) is the migration strategy.
-6. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
-7. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
-8. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.
-9. **Backend, accounts, sync, i18n** — out of scope for the problem size.
+2. **Uneven splits** — percentages / shares / exact amounts. The domain model (`splitAmong`) would become `{ personId, weight }[]`.
+3. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
+4. **Runtime validation of stored data** (e.g. Zod). Today a versioned storage key (`split-it:v2`) is the migration strategy.
+5. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
+6. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
+7. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.
+8. **Backend, accounts, sync, i18n** — out of scope for the problem size.
 
 ## Another currency, display only
 

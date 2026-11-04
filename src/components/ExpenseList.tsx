@@ -1,9 +1,10 @@
+import { formatDay } from '../lib/day';
 import { totalCents } from '../lib/ledger';
 import { formatCents } from '../lib/money';
 import { useLedgerStore, useNameOf } from '../store/ledgerStore';
 import { Card } from './Card';
 
-export function ExpenseList() {
+export function ExpenseList({ onEdit }: { onEdit: (id: string) => void }) {
   const expenses = useLedgerStore((s) => s.expenses);
   const currency = useLedgerStore((s) => s.currency);
   const onRemove = useLedgerStore((s) => s.removeExpense);
@@ -23,11 +24,16 @@ export function ExpenseList() {
             <div>
               <strong>{e.description}</strong>
               <div className="muted small">
-                {nameOf(e.paidBy)} paid · shared by {e.splitAmong.length} {e.splitAmong.length === 1 ? 'person' : 'people'}
+                {nameOf(e.paidBy)} paid
+                {e.occurredOn ? ` · ${formatDay(e.occurredOn)}` : ''} · shared by {e.splitAmong.length}{' '}
+                {e.splitAmong.length === 1 ? 'person' : 'people'}
               </div>
             </div>
             <div className="row tight">
               <span className="money">{formatCents(e.amountCents, currency)}</span>
+              <button type="button" className="ghost" onClick={() => onEdit(e.id)} aria-label={`Change ${e.description}`}>
+                Change
+              </button>
               <button
                 type="button"
                 className="ghost remove"

@@ -1,6 +1,7 @@
 import type { Expense, PersonId } from './types';
 import { computeBalances, computeShares, settle } from './settle';
 
+import { formatDay } from './day';
 import type { Ledger } from './ledger';
 import { totalCents } from './ledger';
 import { formatCents } from './money';
@@ -24,7 +25,8 @@ export function settlementMessage({ people, expenses, currency = 'USD', groupNam
     '',
     `*What we spent* (${plural(expenses.length, 'expense')})`,
     ...expenses.map(
-      (e) => `• ${e.description}: ${money(e.amountCents)} — paid by ${nameOf(e.paidBy)}, ${splitLabel(e)}`,
+      (e) =>
+        `• ${e.description}${e.occurredOn ? ` (${formatDay(e.occurredOn)})` : ''}: ${money(e.amountCents)} — paid by ${nameOf(e.paidBy)}, ${splitLabel(e)}`,
     ),
     '',
     `💰 *Total:* ${money(total)}`,

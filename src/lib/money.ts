@@ -27,6 +27,11 @@ function formatter(currency: CurrencyCode): Intl.NumberFormat {
   return created;
 }
 
+export function centsToInput(cents: number): string {
+  const absolute = Math.abs(cents);
+  return `${Math.floor(absolute / 100)}.${String(absolute % 100).padStart(2, '0')}`;
+}
+
 export function formatCents(cents: number, currency: CurrencyCode = 'USD'): string {
   return formatter(currency).format(cents / 100);
 }
