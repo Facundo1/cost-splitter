@@ -1,29 +1,28 @@
 import { useState, type FormEvent } from 'react';
-import type { Person, PersonId } from '../lib/types';
+import { isNameInput, isNameTaken, peopleWithExpenses } from '../lib/ledger';
+import { useLedgerStore } from '../store/ledgerStore';
+import { Card } from './Card';
 
-interface Props {
-  people: Person[];
-  /** People referenced by at least one expense can't be removed. */
-  lockedIds: Set<PersonId>;
-  onAdd: (name: string) => void;
-  onRemove: (id: PersonId) => void;
-}
+export function PeoplePanel() {
+  const people = useLedgerStore((s) => s.people);
+  const expenses = useLedgerStore((s) => s.expenses);
+  const onAdd = useLedgerStore((s) => s.addPerson);
+  const onRemove = useLedgerStore((s) => s.removePerson);
+  const lockedIds = peopleWithExpenses(expenses);
 
-export function PeoplePanel({ people, lockedIds, onAdd, onRemove }: Props) {
   const [name, setName] = useState('');
-  const trimmed = name.trim();
-  const isDuplicate = people.some((p) => p.name.toLowerCase() === trimmed.toLowerCase());
+  const isDuplicate = isNameTaken(people, name);
+  const canAdd = name.trim() !== '' && !isDuplicate;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!trimmed || isDuplicate) return;
-    onAdd(trimmed);
+    if (!canAdd) return;
+    onAdd(name);
     setName('');
   }
 
   return (
-    <section className="card" aria-labelledby="people-heading">
-      <h2 id="people-heading">1. Who's in?</h2>
+    <Card title="1. Who's in?">
       <form onSubmit={handleSubmit} className="row">
         <label className="sr-only" htmlFor="person-name">
           Name
@@ -31,12 +30,14 @@ export function PeoplePanel({ people, lockedIds, onAdd, onRemove }: Props) {
         <input
           id="person-name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            if (isNameInput(e.target.value)) setName(e.target.value);
+          }}
           placeholder="Add a name"
           maxLength={30}
           autoComplete="off"
         />
-        <button type="submit" disabled={!trimmed || isDuplicate}>
+        <button type="submit" disabled={!canAdd}>
           Add
         </button>
       </form>
@@ -49,11 +50,10 @@ export function PeoplePanel({ people, lockedIds, onAdd, onRemove }: Props) {
               {p.name}
               <button
                 type="button"
-                className="chip-remove"
+                className="chip-remove remove"
                 onClick={() => onRemove(p.id)}
                 disabled={lockedIds.has(p.id)}
                 aria-label={`Remove ${p.name}`}
-                title={lockedIds.has(p.id) ? 'Has expenses — remove those first' : 'Remove'}
               >
                 ×
               </button>
@@ -61,6 +61,6 @@ export function PeoplePanel({ people, lockedIds, onAdd, onRemove }: Props) {
           ))}
         </ul>
       )}
-    </section>
+    </Card>
   );
 }

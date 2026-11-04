@@ -5,8 +5,9 @@
   --muted: #6b6b70;
   --border: #e3e1dc;
   --accent: #2f6f4f;
+  --accent-hover: #24573e;
+  --danger-text: #ffffff;
   --accent-text: #ffffff;
-  --pos: #2f6f4f;
   --neg: #b3402f;
   --highlight: #eef6f1;
   color-scheme: light dark;
@@ -22,8 +23,9 @@
     --muted: #9a9aa0;
     --border: #2e2e32;
     --accent: #5fb98a;
+    --accent-hover: #47996e;
+    --danger-text: #2a0d08;
     --accent-text: #0d1f15;
-    --pos: #6fcf97;
     --neg: #f08a7a;
     --highlight: #18261e;
   }
@@ -47,7 +49,7 @@ body {
 
 .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 h1 { margin: 0; font-size: 1.75rem; }
-h2 { margin: 0 0 12px; font-size: 1.05rem; }
+h2 { margin: 0; font-size: 1.05rem; }
 .header p { margin: 4px 0 0; }
 
 .card {
@@ -57,6 +59,10 @@ h2 { margin: 0 0 12px; font-size: 1.05rem; }
   padding: 16px;
 }
 .card.highlight { background: var(--highlight); }
+.card-header {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
 
 .row { display: flex; gap: 8px; align-items: flex-end; }
 .row.tight { align-items: center; gap: 4px; }
@@ -79,7 +85,9 @@ input, select {
 input[aria-invalid='true'] { border-color: var(--neg); }
 .row > input { flex: 1; }
 
-button {
+button, .button {
+  display: inline-block;
+  text-decoration: none;
   padding: 8px 14px;
   border: 0;
   border-radius: 8px;
@@ -87,6 +95,10 @@ button {
   color: var(--accent-text);
   font-weight: 600;
   cursor: pointer;
+}
+.button.whatsapp {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; background: #25d366; color: #0b2e17;
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 button.ghost {
@@ -106,9 +118,55 @@ button.ghost {
 }
 .chip-remove { background: none; color: var(--muted); padding: 0 6px; font-weight: 400; }
 
+.dialog {
+  max-width: min(400px, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 0.3);
+  /* Same easing/duration as the other open/close animations. */
+  opacity: 0;
+  scale: 0.95;
+  transition:
+    opacity 0.3s ease,
+    scale 0.3s ease,
+    overlay 0.3s allow-discrete,
+    display 0.3s allow-discrete;
+}
+.dialog[open] { opacity: 1; scale: 1; }
+@starting-style {
+  .dialog[open] { opacity: 0; scale: 0.95; }
+}
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0);
+  backdrop-filter: blur(0);
+  transition:
+    background 0.3s ease,
+    backdrop-filter 0.3s ease,
+    overlay 0.3s allow-discrete,
+    display 0.3s allow-discrete;
+}
+.dialog[open]::backdrop { background: rgb(0 0 0 / 0.5); backdrop-filter: blur(2px); }
+@starting-style {
+  .dialog[open]::backdrop { background: rgb(0 0 0 / 0); backdrop-filter: blur(0); }
+}
+.dialog p { margin: 8px 0 20px; color: var(--muted); }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.dialog-actions .ghost { padding: 8px 14px; }
+button.danger { background: var(--neg); color: var(--danger-text); }
+
+/* Hover states */
+button:hover:not(:disabled) { background: var(--accent-hover); }
+.button.whatsapp:hover { background: #1da851; }
+button.ghost:hover:not(:disabled) { background: transparent; color: var(--text); border-color: var(--muted); }
+button.danger:hover:not(:disabled) { background: var(--neg); filter: brightness(0.85); }
+button.remove:hover:not(:disabled) { background: transparent; color: var(--neg); border-color: var(--neg); }
+
 .checks { display: flex; flex-wrap: wrap; gap: 12px; }
-.check { display: inline-flex; gap: 6px; align-items: center; }
-.check input { width: auto; }
+.check { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.check input { width: auto; cursor: pointer; accent-color: var(--accent); }
 
 .list { list-style: none; padding: 0; margin: 0; }
 .list-item {
@@ -119,11 +177,49 @@ button.ghost {
 .list-item:first-child { border-top: 0; }
 
 .transfers { margin: 0 0 12px; padding-left: 20px; display: grid; gap: 6px; font-size: 1.05rem; }
-details summary { cursor: pointer; color: var(--muted); }
+details summary {
+  cursor: pointer;
+  color: var(--muted);
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+details summary::-webkit-details-marker { display: none; }
+details summary::before {
+  content: '▸';
+  transition: rotate 0.25s ease;
+}
+details[open] summary::before { rotate: 90deg; }
+details summary:hover { color: var(--text); }
+
+/* Animated open/close: grows from 0 to its natural height. Browsers without
+   ::details-content / interpolate-size simply open instantly. */
+:root { interpolate-size: allow-keywords; }
+details::details-content {
+  block-size: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.3s ease,
+    opacity 0.3s ease,
+    content-visibility 0.3s allow-discrete;
+}
+details[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details::details-content,
+  details summary::before,
+  ::picker(select),
+  select::picker-icon,
+  .dialog,
+  .dialog::backdrop { transition: none; }
+}
 
 .money { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
-.pos { color: var(--pos); }
-.neg { color: var(--neg); }
 .muted { color: var(--muted); }
 .small { font-size: 0.85rem; }
 .hint { color: var(--neg); font-size: 0.85rem; margin: 6px 0 0; }
@@ -137,4 +233,56 @@ footer { text-align: center; }
 @media (max-width: 480px) {
   .row:not(.tight) { flex-direction: column; align-items: stretch; }
   .amount { width: 100%; }
+}
+
+/*
+ * Customizable <select> (progressive enhancement): the option list opens right below the
+ * select, with the same width, and is styled like the rest of the app. Browsers without
+ * support keep the native OS picker.
+ */
+@supports (appearance: base-select) {
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+  select { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  select::picker-icon { color: var(--muted); transition: rotate 0.15s; }
+  select:open::picker-icon { rotate: 180deg; }
+  ::picker(select) {
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: none;
+    width: anchor-size(width);
+    margin-top: 4px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+    box-sizing: border-box;
+    overflow: hidden;
+    /* Same open/close animation as the "Spent per person" section. */
+    block-size: 0;
+    opacity: 0;
+    transition:
+      block-size 0.3s ease,
+      opacity 0.3s ease,
+      overlay 0.3s allow-discrete,
+      display 0.3s allow-discrete;
+  }
+  select:open::picker(select) {
+    block-size: auto;
+    opacity: 1;
+  }
+  @starting-style {
+    select:open::picker(select) {
+      block-size: 0;
+      opacity: 0;
+    }
+  }
+  option { padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+  option::checkmark { display: none; }
+  option:checked { font-weight: 600; color: var(--accent); }
+  option:hover,
+  option:focus-visible { background: var(--accent-hover); color: var(--accent-text); outline: none; }
 }

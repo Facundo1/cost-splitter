@@ -5,7 +5,9 @@ Pure TypeScript. The only place where money and settlement are computed. Highest
 ## Files
 - `types.ts` — `Person`, `Expense`, `Transfer`. `Expense.amountCents` is an integer; `splitAmong` is non-empty.
 - `money.ts` — `parseAmountToCents(input)` (string parsing, accepts `,` or `.`, ≤ 2 decimals, returns `null` if invalid) and `formatCents`.
-- `settle.ts` — `computeBalances(people, expenses)` → `Map<id, cents>` (positive = is owed); `settle(balances)` → `Transfer[]` (greedy, ≤ n−1 transfers).
+- `ledger.ts` — `Ledger` (`{ people, expenses }`, the whole app state) and pure operations: `addPerson`, `removePerson`, `addExpense`, `removeExpense`, `isNameTaken`, `peopleWithExpenses`, `totalCents`. Business rules live here (no duplicate names, can't remove someone with expenses), not in the UI.
+- `share.ts` — `settlementMessage(ledger)` (WhatsApp-formatted summary: expenses, total, what each person spent, transfers, top payer) and `whatsappShareUrl(text)` (`wa.me` link, no API).
+- `settle.ts` — `computeShares(people, expenses)` → what each person consumed; `computeBalances(people, expenses)` → `Map<id, cents>` (paid − share; positive = is owed); `settle(balances)` → `Transfer[]` (greedy, ≤ n−1 transfers).
 
 ## Invariants (tests enforce them — keep them true)
 - Balances always sum to exactly 0. Leftover cents go to the first participants in `splitAmong` order.

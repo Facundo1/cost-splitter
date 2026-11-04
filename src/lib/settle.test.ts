@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeBalances, settle } from './settle';
+import { computeBalances, computeShares, settle } from './settle';
 import type { Expense, Person } from './types';
 
 const people: Person[] = [
@@ -38,6 +38,18 @@ describe('computeBalances', () => {
   it('only charges the people the expense was split among', () => {
     const balances = computeBalances(people, [expense('a', 2000, ['a', 'b'])]);
     expect(Object.fromEntries(balances)).toEqual({ a: 1000, b: -1000, c: 0 });
+  });
+});
+
+describe('computeShares', () => {
+  it('gives each participant an equal share, regardless of who paid', () => {
+    const shares = computeShares(people, [expense('a', 3000), expense('b', 1000, ['a', 'b'])]);
+    expect(Object.fromEntries(shares)).toEqual({ a: 1500, b: 1500, c: 1000 });
+  });
+
+  it('shares add up to the total spent, even with leftover cents', () => {
+    const shares = computeShares(people, [expense('a', 100), expense('c', 1001, ['a', 'b'])]);
+    expect(sum(shares)).toBe(1101);
   });
 });
 

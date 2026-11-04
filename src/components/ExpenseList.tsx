@@ -1,21 +1,21 @@
+import { totalCents } from '../lib/ledger';
 import { formatCents } from '../lib/money';
-import type { Expense, PersonId } from '../lib/types';
+import { useLedgerStore, useNameOf } from '../store/ledgerStore';
+import { Card } from './Card';
 
-interface Props {
-  expenses: Expense[];
-  nameOf: (id: PersonId) => string;
-  onRemove: (id: string) => void;
-}
-
-export function ExpenseList({ expenses, nameOf, onRemove }: Props) {
-  if (expenses.length === 0) return null;
-  const total = expenses.reduce((sum, e) => sum + e.amountCents, 0);
+export function ExpenseList() {
+  const expenses = useLedgerStore((s) => s.expenses);
+  const onRemove = useLedgerStore((s) => s.removeExpense);
+  const nameOf = useNameOf();
 
   return (
-    <section className="card" aria-labelledby="expenses-heading">
-      <h2 id="expenses-heading">
-        Expenses <span className="muted">· total ${formatCents(total)}</span>
-      </h2>
+    <Card
+      title={
+        <>
+          Expenses <span className="muted">· total {formatCents(totalCents(expenses))}</span>
+        </>
+      }
+    >
       <ul className="list">
         {expenses.map((e) => (
           <li key={e.id} className="list-item">
@@ -26,10 +26,10 @@ export function ExpenseList({ expenses, nameOf, onRemove }: Props) {
               </div>
             </div>
             <div className="row tight">
-              <span className="money">${formatCents(e.amountCents)}</span>
+              <span className="money">{formatCents(e.amountCents)}</span>
               <button
                 type="button"
-                className="ghost"
+                className="ghost remove"
                 onClick={() => onRemove(e.id)}
                 aria-label={`Delete ${e.description}`}
               >
@@ -39,6 +39,6 @@ export function ExpenseList({ expenses, nameOf, onRemove }: Props) {
           </li>
         ))}
       </ul>
-    </section>
+    </Card>
   );
 }

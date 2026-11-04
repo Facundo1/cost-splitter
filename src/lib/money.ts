@@ -1,15 +1,16 @@
-/**
- * Parses user input like "12", "12.5", "12,50" or "1234.56" into integer cents.
- * Returns null for anything that isn't a positive amount with at most 2 decimals.
- */
+/** Parses "12", "12.5" or "12,50" into integer cents. Returns null if not a positive amount. */
 export function parseAmountToCents(input: string): number | null {
   const normalized = input.trim().replace(',', '.');
   if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null;
 
-  const [whole = '0', fraction = ''] = normalized.split('.');
+  const [whole = '', fraction = ''] = normalized.split('.');
   const cents = Number(whole) * 100 + Number(fraction.padEnd(2, '0'));
-  if (!Number.isSafeInteger(cents) || cents <= 0) return null;
-  return cents;
+  return Number.isSafeInteger(cents) && cents > 0 ? cents : null;
+}
+
+/** True while the input can still become a valid amount: digits, one `.`/`,`, ≤ 2 decimals. */
+export function isAmountInput(input: string): boolean {
+  return /^\d*([.,]\d{0,2})?$/.test(input);
 }
 
 const formatter = new Intl.NumberFormat(undefined, {
@@ -18,5 +19,6 @@ const formatter = new Intl.NumberFormat(undefined, {
 });
 
 export function formatCents(cents: number): string {
-  return formatter.format(cents / 100);
+  const sign = cents < 0 ? '-' : '';
+  return `${sign}$${formatter.format(Math.abs(cents) / 100)}`;
 }

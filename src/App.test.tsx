@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import App from './App';
+import { STORAGE_KEY } from './store/ledgerStore';
 
 async function addPerson(user: ReturnType<typeof userEvent.setup>, name: string) {
   await user.type(screen.getByLabelText('Name'), name);
@@ -32,16 +33,24 @@ describe('App', () => {
     expect(items).toHaveLength(2);
     expect(items.some((t) => /Beto pays Ana\s*\$10[.,]00/.test(t ?? ''))).toBe(true);
     expect(items.some((t) => /Caro pays Ana\s*\$10[.,]00/.test(t ?? ''))).toBe(true);
+
+    const share = screen.getByRole('link', { name: 'Share on WhatsApp' });
+    const text = new URL(share.getAttribute('href')!).searchParams.get('text');
+    expect(text).toMatch(/Beto → Ana: \*\$10[.,]00\*/);
+
+    const spent = within(screen.getByRole('list', { name: 'Spent per person' }));
+    expect(spent.getAllByRole('listitem').map((li) => li.textContent)).toEqual([
+      expect.stringMatching(/Ana\$10[.,]00/),
+      expect.stringMatching(/Beto\$10[.,]00/),
+      expect.stringMatching(/Caro\$10[.,]00/),
+    ]);
   });
 
-  it('persists data across reloads', async () => {
+  it('saves changes to localStorage', async () => {
     const user = userEvent.setup();
-    const { unmount } = render(<App />);
-    await addPerson(user, 'Ana');
-    unmount();
-
     render(<App />);
-    expect(screen.getByText('Ana')).toBeInTheDocument();
+    await addPerson(user, 'Ana');
+    expect(localStorage.getItem(STORAGE_KEY)).toContain('"name":"Ana"');
   });
 
   it('rejects duplicate names', async () => {
@@ -50,5 +59,49 @@ describe('App', () => {
     await addPerson(user, 'Ana');
     await user.type(screen.getByLabelText('Name'), 'ana');
     expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
+  });
+
+  it('does not accept digits in names', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.type(screen.getByLabelText('Name'), 'Ana2');
+    expect(screen.getByLabelText('Name')).toHaveValue('Ana');
+  });
+
+  it('asks for confirmation before deleting everything', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await addPerson(user, 'Ana');
+
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
+    const dialog = screen.getByRole('alertdialog', { name: /delete everything/i });
+    expect(dialog).toHaveTextContent(/can't be undone/i);
+
+    await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByText('Ana')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
+    await user.click(screen.getByRole('button', { name: 'Delete everything' }));
+    expect(screen.queryByText('Ana')).not.toBeInTheDocument();
+  });
+
+  it('removes people and expenses, but not someone who still has expenses', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await addPerson(user, 'Ana');
+    await addPerson(user, 'Beto');
+    await addPerson(user, 'Caro');
+
+    await user.click(screen.getByRole('button', { name: 'Remove Caro' }));
+    expect(screen.queryByText('Caro')).not.toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('What for'), 'Pizza');
+    await user.type(screen.getByLabelText('Amount'), '10');
+    await user.click(screen.getByRole('button', { name: 'Add expense' }));
+    expect(screen.getByRole('button', { name: 'Remove Ana' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Delete Pizza' }));
+    expect(screen.queryByText('Pizza')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remove Ana' })).toBeEnabled();
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseAmountToCents } from './money';
+import { formatCents, isAmountInput, parseAmountToCents } from './money';
 
 describe('parseAmountToCents', () => {
   it.each([
@@ -20,5 +20,22 @@ describe('parseAmountToCents', () => {
 
   it.each(['', 'abc', '-5', '0', '0.00', '1.234', '1e3', '1.2.3'])('rejects %j', (input) => {
     expect(parseAmountToCents(input)).toBeNull();
+  });
+});
+
+describe('formatCents', () => {
+  it('formats with currency symbol and sign', () => {
+    expect(formatCents(1050)).toMatch(/^\$10[.,]50$/);
+    expect(formatCents(-1050)).toMatch(/^-\$10[.,]50$/);
+  });
+});
+
+describe('isAmountInput', () => {
+  it.each(['', '1', '12.', '12,5', '12.50'])('accepts partial amount %j', (input) => {
+    expect(isAmountInput(input)).toBe(true);
+  });
+
+  it.each(['a', '12a', '1.234', '1..2', '1.2.3', '-1', '1 2', '1e3'])('rejects %j', (input) => {
+    expect(isAmountInput(input)).toBe(false);
   });
 });

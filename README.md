@@ -6,7 +6,7 @@ Split group expenses (a dinner, a trip, a shared flat) and find out **who pays w
 
 **Live demo:** https://Facundo1.github.io/cost-splitter/
 
-Add people → add expenses (who paid, who it's split between) → get the list of transfers that settles everyone. Data stays in your browser — no account, no server.
+Add people → add expenses (who paid, who it's split between) → see what each person spent and the transfers that settle everyone → share the summary to a WhatsApp chat or group. Data stays in your browser — no account, no server.
 
 ## Quick start
 
@@ -36,11 +36,13 @@ src/
 ├── lib/                 # Pure domain logic — no React, fully unit-tested
 │   ├── types.ts         # Person, Expense, Transfer
 │   ├── money.ts         # Parse/format money as integer cents
-│   └── settle.ts        # Balances + greedy settlement algorithm
-├── components/          # Presentational React components
-├── hooks/
-│   └── useLocalStorage.ts
-├── App.tsx              # State + wiring
+│   ├── ledger.ts        # App state + pure operations (business rules)
+│   ├── settle.ts        # Shares, balances + greedy settlement algorithm
+│   └── share.ts         # WhatsApp summary message + wa.me link
+├── components/          # Panels (read the store via selectors) + reusable Card, ConfirmDialog
+├── store/
+│   └── ledgerStore.ts   # Zustand store (persisted); actions delegate to lib/ledger
+├── App.tsx              # Page layout + reset confirmation
 └── App.test.tsx         # User-flow tests (Testing Library)
 ```
 

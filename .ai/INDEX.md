@@ -5,17 +5,25 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 
 | File | Lines | Exports / contents |
 | --- | ---: | --- |
-| `src/App.test.tsx` | 55 | 4 test cases |
-| `src/App.tsx` | 74 | `App` (function) |
-| `src/components/ExpenseForm.tsx` | 107 | `ExpenseForm` (function) |
+| `src/App.test.tsx` | 108 | 7 test cases |
+| `src/App.tsx` | 56 | `App` (function) |
+| `src/components/Card.tsx` | 24 | `Card` (function) |
+| `src/components/ConfirmDialog.tsx` | 48 | `ConfirmDialog` (function) |
+| `src/components/ExpenseForm.test.tsx` | 78 | 5 test cases |
+| `src/components/ExpenseForm.tsx` | 102 | `ExpenseForm` (function) |
 | `src/components/ExpenseList.tsx` | 45 | `ExpenseList` (function) |
 | `src/components/PeoplePanel.tsx` | 67 | `PeoplePanel` (function) |
-| `src/components/SettlementPanel.tsx` | 44 | `SettlementPanel` (function) |
-| `src/hooks/useLocalStorage.ts` | 28 | `useLocalStorage` (function) |
-| `src/lib/money.test.ts` | 25 | 3 test cases |
-| `src/lib/money.ts` | 23 | `parseAmountToCents` (function), `formatCents` (function) |
-| `src/lib/settle.test.ts` | 98 | 9 test cases |
-| `src/lib/settle.ts` | 69 | `computeBalances` (function), `settle` (function) |
+| `src/components/SettlementPanel.tsx` | 68 | `SettlementPanel` (function) |
+| `src/lib/ledger.test.ts` | 103 | 11 test cases |
+| `src/lib/ledger.ts` | 48 | `Ledger` (interface), `EMPTY_LEDGER` (const), `isNameTaken` (function), `totalCents` (function), `isNameInput` (function), `peopleWithExpenses` (function), `addPerson` (function), `removePerson` (function), `addExpense` (function), `removeExpense` (function) |
+| `src/lib/money.test.ts` | 42 | 6 test cases |
+| `src/lib/money.ts` | 25 | `parseAmountToCents` (function), `isAmountInput` (function), `formatCents` (function) |
+| `src/lib/settle.test.ts` | 110 | 11 test cases |
+| `src/lib/settle.ts` | 51 | `computeShares` (function), `computeBalances` (function), `settle` (function) |
+| `src/lib/share.test.ts` | 72 | 6 test cases |
+| `src/lib/share.ts` | 67 | `settlementMessage` (function), `whatsappShareUrl` (function) |
 | `src/lib/types.ts` | 23 | `PersonId` (type), `Person` (interface), `Expense` (interface), `Transfer` (interface) |
 | `src/main.tsx` | 11 | — |
-| `src/test/setup.ts` | 9 | — |
+| `src/store/ledgerStore.test.ts` | 49 | 5 test cases |
+| `src/store/ledgerStore.ts` | 49 | `STORAGE_KEY` (const), `useLedgerStore` (const), `useNameOf` (function) |
+| `src/test/setup.ts` | 21 | — |

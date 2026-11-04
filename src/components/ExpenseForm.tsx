@@ -1,107 +1,101 @@
 import { useState, type FormEvent } from 'react';
-import { parseAmountToCents } from '../lib/money';
-import type { Expense, Person, PersonId } from '../lib/types';
+import { isAmountInput, parseAmountToCents } from '../lib/money';
+import type { PersonId } from '../lib/types';
+import { useLedgerStore } from '../store/ledgerStore';
+import { Card } from './Card';
 
-interface Props {
-  people: Person[];
-  onAdd: (expense: Omit<Expense, 'id'>) => void;
-}
-
-export function ExpenseForm({ people, onAdd }: Props) {
+export function ExpenseForm() {
+  const people = useLedgerStore((s) => s.people);
+  const onAdd = useLedgerStore((s) => s.addExpense);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [paidBy, setPaidBy] = useState<PersonId>('');
-  // Track who is *excluded* so new people are included by default without syncing state.
-  const [excluded, setExcluded] = useState<Set<PersonId>>(new Set());
+  const [excluded, setExcluded] = useState<PersonId[]>([]);
 
   const amountCents = parseAmountToCents(amount);
-  const payer = people.some((p) => p.id === paidBy) ? paidBy : people[0]?.id;
-  const splitAmong = people.filter((p) => !excluded.has(p.id)).map((p) => p.id);
-  const canSubmit = Boolean(description.trim() && amountCents && payer && splitAmong.length > 0);
+  const payer = people.find((p) => p.id === paidBy)?.id ?? people[0]?.id;
+  const splitAmong = people.map((p) => p.id).filter((id) => !excluded.includes(id));
 
-  function toggle(id: PersonId) {
-    setExcluded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
+  const toggle = (id: PersonId) =>
+    setExcluded((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
+
+  // Single source of truth for validation: null means "can't submit yet".
+  const trimmed = description.trim();
+  const draft =
+    trimmed && amountCents && payer && splitAmong.length > 0
+      ? { description: trimmed, amountCents, paidBy: payer, splitAmong }
+      : null;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!canSubmit || !amountCents || !payer) return;
-    onAdd({ description: description.trim(), amountCents, paidBy: payer, splitAmong });
+    if (!draft) return;
+    onAdd(draft);
     setDescription('');
     setAmount('');
   }
 
-  if (people.length < 2) {
-    return (
-      <section className="card" aria-labelledby="expense-heading">
-        <h2 id="expense-heading">2. Add an expense</h2>
-        <p className="muted">Add at least two people to start splitting.</p>
-      </section>
-    );
-  }
-
   return (
-    <section className="card" aria-labelledby="expense-heading">
-      <h2 id="expense-heading">2. Add an expense</h2>
-      <form onSubmit={handleSubmit} className="stack">
-        <div className="row">
-          <label className="field grow">
-            <span>What for</span>
-            <input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Asado, nafta, Airbnb…"
-              maxLength={60}
-            />
-          </label>
-          <label className="field amount">
-            <span>Amount</span>
-            <input
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-              inputMode="decimal"
-              aria-invalid={amount !== '' && amountCents === null}
-            />
-          </label>
-        </div>
-
-        <label className="field">
-          <span>Paid by</span>
-          <select value={payer} onChange={(e) => setPaidBy(e.target.value)}>
-            {people.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <fieldset className="field">
-          <legend>Split between</legend>
-          <div className="checks">
-            {people.map((p) => (
-              <label key={p.id} className="check">
-                <input
-                  type="checkbox"
-                  checked={!excluded.has(p.id)}
-                  onChange={() => toggle(p.id)}
-                />
-                {p.name}
-              </label>
-            ))}
+    <Card title="2. Add an expense">
+      {people.length < 2 ? (
+        <p className="muted">Add at least two people to start splitting.</p>
+      ) : (
+        <form onSubmit={handleSubmit} className="stack">
+          <div className="row">
+            <label className="field grow">
+              <span>What for</span>
+              <input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Asado, nafta, Airbnb…"
+                maxLength={60}
+              />
+            </label>
+            <label className="field amount">
+              <span>Amount</span>
+              <input
+                value={amount}
+                onChange={(e) => {
+                  if (isAmountInput(e.target.value)) setAmount(e.target.value);
+                }}
+                placeholder="0.00"
+                inputMode="decimal"
+                aria-invalid={amount !== '' && amountCents === null}
+              />
+            </label>
           </div>
-        </fieldset>
 
-        <button type="submit" disabled={!canSubmit}>
-          Add expense
-        </button>
-      </form>
-    </section>
+          <label className="field">
+            <span>Paid by</span>
+            <select value={payer} onChange={(e) => setPaidBy(e.target.value)}>
+              {people.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <fieldset className="field">
+            <legend>Split between</legend>
+            <div className="checks">
+              {people.map((p) => (
+                <label key={p.id} className="check">
+                  <input
+                    type="checkbox"
+                    checked={!excluded.includes(p.id)}
+                    onChange={() => toggle(p.id)}
+                  />
+                  {p.name}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <button type="submit" disabled={!draft}>
+            Add expense
+          </button>
+        </form>
+      )}
+    </Card>
   );
 }

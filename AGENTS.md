@@ -4,14 +4,14 @@ Tool-agnostic context for AI coding assistants (Claude Code reads it via `CLAUDE
 Keep this file short: it is loaded on **every** prompt. Area details live next to the code and load only when needed.
 
 ## What this is
-Vite + React 19 + TypeScript SPA. Splits group expenses and computes who pays whom. No backend; state in `localStorage`.
+Vite + React 19 + TypeScript SPA, Zustand for state. Splits group expenses and computes who pays whom. No backend; state in `localStorage`.
 
 ## Retrieval: where to look (read only what the task needs)
 
 | Task touches… | Read first | Area guide |
 | --- | --- | --- |
 | Money math, balances, settlement algorithm | `src/lib/` | [src/lib/AGENTS.md](src/lib/AGENTS.md) |
-| UI, forms, state, persistence | `src/components/`, `src/App.tsx`, `src/hooks/` | [src/components/AGENTS.md](src/components/AGENTS.md) |
+| UI, forms, state, persistence | `src/components/`, `src/App.tsx`, `src/store/` | [src/components/AGENTS.md](src/components/AGENTS.md) |
 | CI/CD, lint, build, test config | `.github/workflows/ci.yml`, `vite.config.ts`, `eslint.config.js` | this file (below) |
 | Product decisions, scope, what's out | `DECISIONS.md` | — |
 
