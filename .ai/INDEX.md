@@ -26,7 +26,7 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | `src/lib/money.test.ts` | 55 | 8 test cases |
 | `src/lib/money.ts` | 43 | `parseAmountToCents` (function), `isAmountInput` (function), `centsToInput` (function), `formatCents` (function), `convertCents` (function) |
 | `src/lib/sample.test.ts` | 13 | 1 test cases |
-| `src/lib/sample.ts` | 31 | `sampleDinner` (function) |
+| `src/lib/sample.ts` | 33 | `sampleDinner` (function) |
 | `src/lib/settle.test.ts` | 124 | 13 test cases |
 | `src/lib/settle.ts` | 72 | `computeShares` (function), `computeBalances` (function), `settle` (function) |
 | `src/lib/share.test.ts` | 85 | 6 test cases |
