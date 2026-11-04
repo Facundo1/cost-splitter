@@ -1,4 +1,3 @@
-/** Parses "12", "12.5" or "12,50" into integer cents. Returns null if not a positive amount. */
 export function parseAmountToCents(input: string): number | null {
   const normalized = input.trim().replace(',', '.');
   if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null;
@@ -8,7 +7,6 @@ export function parseAmountToCents(input: string): number | null {
   return Number.isSafeInteger(cents) && cents > 0 ? cents : null;
 }
 
-/** True while the input can still become a valid amount: digits, one `.`/`,`, ≤ 2 decimals. */
 export function isAmountInput(input: string): boolean {
   return /^\d*([.,]\d{0,2})?$/.test(input);
 }

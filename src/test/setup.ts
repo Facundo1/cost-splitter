@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom/vitest';
-import { cleanup } from '@testing-library/react';
-import { afterEach } from 'vitest';
+
 import { EMPTY_LEDGER } from '../lib/ledger';
+import { afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
 import { useLedgerStore } from '../store/ledgerStore';
 
-// jsdom doesn't implement <dialog> yet: minimal stand-in for showModal/close.
 HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
   this.open = true;
 };

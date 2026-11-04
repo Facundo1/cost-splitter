@@ -126,7 +126,6 @@ button.ghost {
   background: var(--card);
   color: var(--text);
   box-shadow: 0 16px 48px rgb(0 0 0 / 0.3);
-  /* Same easing/duration as the other open/close animations. */
   opacity: 0;
   scale: 0.95;
   transition:
@@ -157,7 +156,6 @@ button.ghost {
 .dialog-actions .ghost { padding: 8px 14px; }
 button.danger { background: var(--neg); color: var(--danger-text); }
 
-/* Hover states */
 button:hover:not(:disabled) { background: var(--accent-hover); }
 .button.whatsapp:hover { background: #1da851; }
 button.ghost:hover:not(:disabled) { background: transparent; color: var(--text); border-color: var(--muted); }
@@ -193,8 +191,6 @@ details summary::before {
 details[open] summary::before { rotate: 90deg; }
 details summary:hover { color: var(--text); }
 
-/* Animated open/close: grows from 0 to its natural height. Browsers without
-   ::details-content / interpolate-size simply open instantly. */
 :root { interpolate-size: allow-keywords; }
 details::details-content {
   block-size: 0;
@@ -235,11 +231,6 @@ footer { text-align: center; }
   .amount { width: 100%; }
 }
 
-/*
- * Customizable <select> (progressive enhancement): the option list opens right below the
- * select, with the same width, and is styled like the rest of the app. Browsers without
- * support keep the native OS picker.
- */
 @supports (appearance: base-select) {
   select,
   ::picker(select) {
@@ -261,7 +252,6 @@ footer { text-align: center; }
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
     box-sizing: border-box;
     overflow: hidden;
-    /* Same open/close animation as the "Spent per person" section. */
     block-size: 0;
     opacity: 0;
     transition:

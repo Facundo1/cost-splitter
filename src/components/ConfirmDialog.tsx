@@ -9,7 +9,6 @@ interface Props {
   onCancel: () => void;
 }
 
-/** Modal confirmation built on the native <dialog>: focus trap, Esc and backdrop for free. */
 export function ConfirmDialog({ open, title, message, confirmLabel, onConfirm, onCancel }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -29,7 +28,6 @@ export function ConfirmDialog({ open, title, message, confirmLabel, onConfirm, o
       aria-labelledby={titleId}
       aria-describedby={messageId}
       onClose={onCancel}
-      // A click on the backdrop lands on the <dialog> itself, not on its content.
       onClick={(e) => e.target === e.currentTarget && onCancel()}
     >
       <h2 id={titleId}>⚠️ {title}</h2>

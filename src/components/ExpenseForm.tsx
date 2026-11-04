@@ -19,7 +19,6 @@ export function ExpenseForm() {
   const toggle = (id: PersonId) =>
     setExcluded((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
 
-  // Single source of truth for validation: null means "can't submit yet".
   const trimmed = description.trim();
   const draft =
     trimmed && amountCents && payer && splitAmong.length > 0

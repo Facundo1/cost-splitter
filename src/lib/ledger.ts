@@ -1,6 +1,5 @@
 import type { Expense, Person, PersonId } from './types';
 
-/** The whole app state. Operations never mutate it: they return a new ledger. */
 export interface Ledger {
   people: Person[];
   expenses: Expense[];
@@ -17,12 +16,10 @@ export function totalCents(expenses: Expense[]): number {
   return expenses.reduce((sum, e) => sum + e.amountCents, 0);
 }
 
-/** Names allow letters (any language), spaces, apostrophes, dots and hyphens — no digits. */
 export function isNameInput(input: string): boolean {
   return /^[\p{L}\p{M} '.-]*$/u.test(input);
 }
 
-/** People who paid or share an expense. They can't be removed without breaking balances. */
 export function peopleWithExpenses(expenses: Expense[]): Set<PersonId> {
   return new Set(expenses.flatMap((e) => [e.paidBy, ...e.splitAmong]));
 }

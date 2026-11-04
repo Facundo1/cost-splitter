@@ -1,15 +1,12 @@
-import type { Ledger } from './ledger';
-import { totalCents } from './ledger';
-import { formatCents } from './money';
-import { computeBalances, computeShares, settle } from './settle';
 import type { Expense, PersonId } from './types';
+import { computeBalances, computeShares, settle } from './settle';
+
+import type { Ledger } from './ledger';
+import { formatCents } from './money';
+import { totalCents } from './ledger';
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
-/**
- * Friendly WhatsApp summary (uses WhatsApp's *bold* / _italic_). Adapts to the data:
- * singular/plural, "everyone's even", top payer shout-out.
- */
 export function settlementMessage({ people, expenses }: Ledger): string {
   const nameOf = (id: PersonId) => people.find((p) => p.id === id)?.name ?? '?';
   const total = totalCents(expenses);
@@ -60,7 +57,6 @@ function topPayerOf(expenses: Expense[]): { id: PersonId; cents: number } | unde
   return id === undefined || cents === undefined ? undefined : { id, cents };
 }
 
-/** Opens WhatsApp (app or web) with the text pre-filled; the user picks the chat or group. */
 export function whatsappShareUrl(text: string): string {
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }

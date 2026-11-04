@@ -6,12 +6,12 @@ const store = () => useLedgerStore.getState();
 describe('ledgerStore', () => {
   it('delegates actions to the ledger rules', () => {
     store().addPerson('Ana');
-    store().addPerson('ana'); // duplicate: ignored by lib/ledger
+    store().addPerson('ana');
     store().addPerson('Beto');
     const [ana, beto] = store().people;
 
     store().addExpense({ description: 'Pizza', amountCents: 1000, paidBy: ana!.id, splitAmong: [beto!.id] });
-    store().removePerson(ana!.id); // has expenses: ignored
+    store().removePerson(ana!.id);
 
     expect(store().people.map((p) => p.name)).toEqual(['Ana', 'Beto']);
     store().removeExpense(store().expenses[0]!.id);

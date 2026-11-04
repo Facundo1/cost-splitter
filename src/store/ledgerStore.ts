@@ -18,13 +18,8 @@ interface LedgerActions {
   reset: () => void;
 }
 
-// Bump the version when the stored shape changes (instead of writing migrations).
 export const STORAGE_KEY = 'split-it:v2';
 
-/**
- * Global app state. Thin wrapper: every action delegates to a pure function in lib/ledger.ts,
- * where the business rules (and their unit tests) live. `persist` saves it to localStorage.
- */
 export const useLedgerStore = create<Ledger & LedgerActions>()(
   persist(
     (set) => ({
