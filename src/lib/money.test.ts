@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatCents, isAmountInput, parseAmountToCents } from './money';
+import { convertCents, formatCents, isAmountInput, parseAmountToCents } from './money';
 
 describe('parseAmountToCents', () => {
   it.each([
@@ -32,6 +32,14 @@ describe('formatCents', () => {
   it('uses a distinct label for pesos and euros', () => {
     expect(formatCents(1050, 'EUR')).toMatch(/^€10[.,]50$/);
     expect(formatCents(1050, 'ARS').replace(/\s/g, ' ')).toBe('ARS 10.50');
+  });
+});
+
+describe('convertCents', () => {
+  it('rounds a display conversion to the nearest cent', () => {
+    expect(convertCents(100, 0.9)).toBe(90);
+    expect(convertCents(101, 0.5)).toBe(51);
+    expect(convertCents(100, Number.NaN)).toBe(100);
   });
 });
 

@@ -30,3 +30,8 @@ function formatter(currency: CurrencyCode): Intl.NumberFormat {
 export function formatCents(cents: number, currency: CurrencyCode = 'USD'): string {
   return formatter(currency).format(cents / 100);
 }
+
+export function convertCents(cents: number, rate: number): number {
+  if (!Number.isFinite(rate) || rate <= 0) return cents;
+  return Math.round(cents * rate);
+}

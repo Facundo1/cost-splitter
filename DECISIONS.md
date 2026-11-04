@@ -108,12 +108,20 @@ Things I knowingly skipped to stay in the time box, roughly in the order I'd add
 1. **Shareable ledger link** — encode the state in the URL so the group can *open and edit* the same ledger without a backend (today WhatsApp sharing sends a read-only summary).
 2. **Edit an expense** — today you delete and re-add.
 3. **Uneven splits** — percentages / shares / exact amounts. The domain model (`splitAmong`) would become `{ personId, weight }[]`.
-4. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. Switching it relabels amounts; it does not convert them. Showing the same total in a second currency is a later step.
+4. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
 5. **Runtime validation of stored data** (e.g. Zod). Today a versioned storage key (`split-it:v2`) is the migration strategy.
 6. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
 7. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
 8. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.
 9. **Backend, accounts, sync, i18n** — out of scope for the problem size.
+
+## Another currency, display only
+
+The settlement stays in integer cents of the group's currency. "Also show in" multiplies those cents by a live rate and rounds to the nearest cent. That number is a hint, never an input to `settle`.
+
+Frankfurter publishes ECB rates and does not list ARS, which the group can pick. The reader calls the public [currency-api](https://github.com/fawazahmed0/currency-api) dataset instead: no key, USD/EUR/ARS included, jsDelivr first and `latest.currency-api.pages.dev` if that host fails.
+
+**Axios** is the HTTP adapter behind `ExchangeRateReader`. Tests pass a fake `getJson`, so the app never needs the network to prove the parser or the fallback. If both hosts fail, the last successful quote for that pair is shown with a plain message. If there is no saved quote, the screen says the amounts stay in the group's currency.
 
 ## How AI was used
 

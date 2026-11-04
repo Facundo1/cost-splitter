@@ -1,6 +1,10 @@
-import { formatCents } from '../lib/money';
+import { useState } from 'react';
+import { CURRENCIES, CURRENCY_NAME, isCurrencyCode, type CurrencyCode } from '../lib/currency';
+import { formatDay } from '../lib/day';
+import { convertCents, formatCents } from '../lib/money';
 import { settlementMessage, whatsappShareUrl } from '../lib/share';
 import { computeBalances, computeShares, settle } from '../lib/settle';
+import { useExchangeQuote, type QuoteStatus } from '../rates/useExchangeQuote';
 import { useLedgerStore, useNameOf } from '../store/ledgerStore';
 import { Card } from './Card';
 
@@ -9,10 +13,15 @@ export function SettlementPanel() {
   const expenses = useLedgerStore((s) => s.expenses);
   const currency = useLedgerStore((s) => s.currency);
   const nameOf = useNameOf();
+  const [display, setDisplay] = useState<CurrencyCode | ''>('');
+  const shown = display === currency ? '' : display;
+  const { quote, status } = useExchangeQuote(currency, shown);
+  const note = rateNote(status, quote?.asOf, currency);
 
   const shares = computeShares(people, expenses);
   const transfers = settle(computeBalances(people, expenses));
   const shareUrl = whatsappShareUrl(settlementMessage({ people, expenses, currency }));
+  const other = (cents: number) => (quote ? formatCents(convertCents(cents, quote.rate), quote.to) : null);
 
   return (
     <Card
@@ -31,6 +40,25 @@ export function SettlementPanel() {
         </a>
       }
     >
+      <label className="field">
+        <span>Also show in</span>
+        <select
+          value={shown}
+          onChange={(event) => {
+            const value = event.target.value;
+            setDisplay(isCurrencyCode(value) ? value : '');
+          }}
+        >
+          <option value="">Just {currency}</option>
+          {CURRENCIES.filter((code) => code !== currency).map((code) => (
+            <option key={code} value={code}>
+              {CURRENCY_NAME[code]} ({code})
+            </option>
+          ))}
+        </select>
+      </label>
+      {note && <p className={status === 'fresh' ? 'muted small' : 'hint'}>{note}</p>}
+
       {transfers.length === 0 ? (
         <p className="muted">Nobody owes anything.</p>
       ) : (
@@ -39,6 +67,7 @@ export function SettlementPanel() {
             <li key={`${t.from}-${t.to}`}>
               <strong>{nameOf(t.from)}</strong> pays <strong>{nameOf(t.to)}</strong>{' '}
               <span className="money">{formatCents(t.amountCents, currency)}</span>
+              {other(t.amountCents) && <span className="muted small"> · about {other(t.amountCents)}</span>}
             </li>
           ))}
         </ol>
@@ -50,13 +79,24 @@ export function SettlementPanel() {
           {[...shares].map(([id, cents]) => (
             <li key={id} className="list-item">
               {nameOf(id)}
-              <span className="money">{formatCents(cents, currency)}</span>
+              <span className="money">
+                {formatCents(cents, currency)}
+                {other(cents) && <span className="muted small"> · about {other(cents)}</span>}
+              </span>
             </li>
           ))}
         </ul>
       </details>
     </Card>
   );
+}
+
+function rateNote(status: QuoteStatus, asOf: string | undefined, currency: CurrencyCode): string | null {
+  if (status === 'loading') return "Checking today's rate…";
+  if (status === 'missing') return `Couldn't load today's rate. Amounts stay in ${CURRENCY_NAME[currency]}.`;
+  if (status === 'stale' && asOf) return `Couldn't refresh the rate. Still showing the rate from ${formatDay(asOf)}.`;
+  if (status === 'fresh' && asOf) return `Rate from ${formatDay(asOf)}.`;
+  return null;
 }
 
 function WhatsAppIcon() {

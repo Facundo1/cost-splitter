@@ -13,19 +13,25 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | `src/components/ExpenseForm.tsx` | 106 | `ExpenseForm` (function) |
 | `src/components/ExpenseList.tsx` | 46 | `ExpenseList` (function) |
 | `src/components/PeoplePanel.tsx` | 68 | `PeoplePanel` (function) |
-| `src/components/SettlementPanel.tsx` | 69 | `SettlementPanel` (function) |
+| `src/components/SettlementPanel.tsx` | 109 | `SettlementPanel` (function) |
 | `src/components/WelcomeScreen.tsx` | 44 | `SESSION_KEY` (const), `WelcomeScreen` (function) |
 | `src/lib/currency.ts` | 14 | `CURRENCIES` (const), `CurrencyCode` (type), `CURRENCY_NAME` (const), `isCurrencyCode` (function) |
+| `src/lib/day.test.ts` | 10 | 1 test cases |
+| `src/lib/day.ts` | 12 | `formatDay` (function) |
 | `src/lib/ledger.test.ts` | 113 | 12 test cases |
 | `src/lib/ledger.ts` | 51 | `Ledger` (interface), `EMPTY_LEDGER` (const), `setCurrency` (function), `isNameTaken` (function), `totalCents` (function), `isNameInput` (function), `peopleWithExpenses` (function), `addPerson` (function), `removePerson` (function), `addExpense` (function), `removeExpense` (function) |
-| `src/lib/money.test.ts` | 47 | 7 test cases |
-| `src/lib/money.ts` | 33 | `parseAmountToCents` (function), `isAmountInput` (function), `formatCents` (function) |
+| `src/lib/money.test.ts` | 55 | 8 test cases |
+| `src/lib/money.ts` | 38 | `parseAmountToCents` (function), `isAmountInput` (function), `formatCents` (function), `convertCents` (function) |
 | `src/lib/settle.test.ts` | 107 | 11 test cases |
 | `src/lib/settle.ts` | 44 | `computeShares` (function), `computeBalances` (function), `settle` (function) |
 | `src/lib/share.test.ts` | 78 | 6 test cases |
 | `src/lib/share.ts` | 64 | `settlementMessage` (function), `whatsappShareUrl` (function) |
 | `src/lib/types.ts` | 21 | `PersonId` (type), `Person` (interface), `Expense` (interface), `Transfer` (interface) |
 | `src/main.tsx` | 11 | — |
+| `src/rates/currencyApi.test.ts` | 51 | 6 test cases |
+| `src/rates/currencyApi.ts` | 55 | `RateQuote` (interface), `ExchangeRateReader` (interface), `parseCurrencyApi` (function), `createCurrencyApiReader` (function), `currencyApi` (const) |
+| `src/rates/lastQuote.ts` | 23 | `readLastQuote` (function), `writeLastQuote` (function) |
+| `src/rates/useExchangeQuote.ts` | 48 | `QuoteStatus` (type), `useExchangeQuote` (function) |
 | `src/store/ledgerStore.test.ts` | 55 | 6 test cases |
 | `src/store/ledgerStore.ts` | 56 | `STORAGE_KEY` (const), `useLedgerStore` (const), `useNameOf` (function) |
 | `src/test/setup.ts` | 22 | — |
