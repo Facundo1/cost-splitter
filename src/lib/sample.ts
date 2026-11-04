@@ -16,6 +16,7 @@ export function sampleDinner(): Ledger {
         amountCents: 3000,
         paidBy: 'ana',
         splitAmong: ['ana', 'beto', 'caro'],
+        occurredOn: '2026-11-01',
       },
       {
         id: 'taxi',
@@ -23,6 +24,7 @@ export function sampleDinner(): Ledger {
         amountCents: 1800,
         paidBy: 'beto',
         splitAmong: ['ana', 'beto'],
+        occurredOn: '2026-11-01',
       },
     ],
     payments: [],
