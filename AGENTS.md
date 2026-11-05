@@ -4,7 +4,7 @@ Tool-agnostic context for AI coding assistants (Claude Code reads it via `CLAUDE
 Keep this file short: it is loaded on **every** prompt. Area details live next to the code and load only when needed.
 
 ## What this is
-Vite + React 19 + TypeScript SPA, Zustand for state. Splits group expenses and computes who pays whom. No backend; state in `localStorage`.
+Vite + React 19 + TypeScript SPA, Zustand for state. Splits group expenses and computes who pays whom. No backend; state in `localStorage`. `/` is the welcome screen and `/group` is the app. A `?g=` link reopens the same group.
 
 ## Retrieval: where to look (read only what the task needs)
 
@@ -12,7 +12,7 @@ Vite + React 19 + TypeScript SPA, Zustand for state. Splits group expenses and c
 | --- | --- | --- |
 | Money math, balances, settlement algorithm | `src/lib/` | [src/lib/AGENTS.md](src/lib/AGENTS.md) |
 | Live exchange rate | `src/rates/` | [src/lib/AGENTS.md](src/lib/AGENTS.md) |
-| UI, forms, state, persistence | `src/components/`, `src/App.tsx`, `src/store/` | [src/components/AGENTS.md](src/components/AGENTS.md) |
+| UI, forms, state, persistence, routes | `src/components/`, `src/App.tsx`, `src/sharedGroup.ts`, `src/store/` | [src/components/AGENTS.md](src/components/AGENTS.md) |
 | CI/CD, lint, build, test config | `.github/workflows/ci.yml`, `vite.config.ts`, `eslint.config.js` | this file (below) |
 | Product decisions, scope, what's out | `DECISIONS.md` | — |
 
@@ -36,4 +36,4 @@ Vite + React 19 + TypeScript SPA, Zustand for state. Splits group expenses and c
 6. Out of scope unless asked: backend, auth, state libraries, CSS frameworks (see "Deliberately left out" in `DECISIONS.md`).
 
 ## CI/CD
-`.github/workflows/ci.yml`: `npm ci → lint → typecheck → context:check → test → build` on push/PR; deploys `dist/` to GitHub Pages on `main`. Node version from `.nvmrc`.
+`.github/workflows/ci.yml`: `npm ci → lint → typecheck → context:check → test → build` on push/PR; deploys `dist/` to GitHub Pages on `main`. Node version from `.nvmrc`. `scripts/group-page.mjs` adds `dist/group/index.html` during the build so `/group` reloads on Pages.

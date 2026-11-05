@@ -9,6 +9,8 @@ Pure TypeScript. The only place where money and settlement are computed. Highest
 - `settle.ts` — shares, balances (expenses, then payments), greedy settlement.
 - `share.ts` — WhatsApp summary and `wa.me` link. No WhatsApp API.
 - `backup.ts` — `serializeLedger` / `parseLedgerBackup`. A bad file returns null and must not be loaded.
+- `link.ts` — `encodeGroupParam` / `ledgerFromSearch`. Same JSON as a backup, base64url in `?g=`. A bad value returns null.
+- `route.ts` — `routeName` / `routePath`. `/` is the welcome screen. `/group` is the app. The project prefix (`/cost-splitter`) stays in front of both.
 - `currency.ts` — `USD`, `ARS`, `EUR`.
 - `sample.ts` — `sampleDinner()`.
 
@@ -23,4 +25,4 @@ Pure TypeScript. The only place where money and settlement are computed. Highest
 - Add/adjust tests in `*.test.ts` next to the file. Prefer invariant/property-style assertions over hard-coded outputs.
 
 ## Likely next changes (see DECISIONS.md)
-A different currency on each bill, or a shareable link so the group can edit the same ledger. Parts already cover an unequal split without changing `splitAmong`.
+A different currency on each bill. Parts already cover an unequal split without changing `splitAmong`. The share link already reuses `parseLedgerBackup`.

@@ -103,17 +103,26 @@ Goal: any AI assistant gets focused context per area without burning tokens read
 - **Explicit "never read" list** (`node_modules`, `dist`, lockfile): the biggest token sinks.
 - **Why not embeddings + vector store?** For ~15 files, chunking/embedding/retrieval adds infra, latency and a second source of truth, and semantic chunks lose the structure (invariants, ownership) that matters for code. I'd revisit it at hundreds of files or when pulling in external docs (tickets, ADRs). Code search (grep/LSP) + curated area context beats it at this size.
 
+## A link to the same group
+
+`/` is the welcome screen. `/group` is the app. The History API is enough for two screens, so there is no router library.
+
+Copy link puts the group on `/group?g=…`. The value is the same JSON as a saved file, base64url-encoded. It is loaded only when `parseLedgerBackup` accepts it. A broken link leaves the current group alone. After a valid link loads, the query is removed, so a refresh keeps later edits from this browser instead of restoring the snapshot.
+
+The production build also emits `group/index.html` (`scripts/group-page.mjs`), with asset URLs pointed one folder up. GitHub Pages can open `/group` on a refresh, and `base` stays relative so the same build still works locally. Vite finishes the HTML after `generateBundle`, so the copy happens in `writeBundle`.
+
+WhatsApp still sends the read-only summary. The link is how someone else opens and edits the same bills, with no server.
+
 ## Deliberately left out
 
 Things I knowingly skipped to stay in the time box, roughly in the order I'd add them:
 
-1. **Shareable ledger link** — encode the state in the URL so the group can *open and edit* the same ledger without a backend (today WhatsApp sharing sends a read-only summary).
-2. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
-3. **A schema library for stored data** (e.g. Zod). A saved file is checked by hand in `parseLedgerBackup` before it replaces the group. Data this browser already saved is still trusted, with defaults when a new field is missing.
-4. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
-5. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
-6. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.
-7. **Backend, accounts, sync, i18n** — out of scope for the problem size.
+1. **A different currency on each bill** — the group picks one of USD, ARS, or EUR. A second currency is display-only (see below). Switching the group currency relabels amounts; it does not convert bills already added.
+2. **A schema library for stored data** (e.g. Zod). A saved file, and a shared link, are checked by hand in `parseLedgerBackup` before either replaces the group. Data this browser already saved is still trusted, with defaults when a new field is missing.
+3. **E2E tests (Playwright)** — the Testing Library flow test covers the critical path; a real browser test would be next.
+4. **Optimal settlement** — greedy can occasionally use one more transfer than the true minimum. Exact solutions are exponential; not worth it for groups of < 15 people.
+5. **Pre-commit hooks, Prettier, Dependabot, coverage thresholds** — good hygiene for a team repo, noise for a 1-hour solo project. CI already enforces lint + types + tests.
+6. **Backend, accounts, sync, i18n** — out of scope for the problem size. The shared link is the way a second person opens the same group.
 
 ## Another currency, display only
 

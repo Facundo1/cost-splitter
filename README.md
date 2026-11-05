@@ -6,7 +6,7 @@ Split group expenses (a dinner, a trip, a shared flat) and find out **who pays w
 
 **Live demo:** https://Facundo1.github.io/cost-splitter/
 
-Add people → add expenses (who paid, who it's split between) → see what each person spent and the transfers that settle everyone → share the summary to a WhatsApp chat or group. Data stays in your browser — no account, no server.
+Add people → add expenses (who paid, who it's split between) → see what each person spent and the transfers that settle everyone. Copy a link so someone else can open the same group, or send the summary to WhatsApp. Data stays in the browser.
 
 ## Quick start
 
@@ -40,17 +40,21 @@ src/
 │   ├── ledger.ts        # Group state + pure operations
 │   ├── settle.ts        # Shares, balances, greedy settlement
 │   ├── share.ts         # WhatsApp summary + wa.me link
-│   └── backup.ts        # Save / open a JSON copy of the group
+│   ├── backup.ts        # Save / open a JSON copy of the group
+│   ├── link.ts          # Same JSON, base64url, for ?g=
+│   └── route.ts         # / welcome, /group app
 ├── rates/               # ExchangeRateReader. Axios is the HTTP adapter
-├── components/          # Welcome screen, panels, save/open
+├── components/          # Welcome screen, panels, save/open/copy link
+├── sharedGroup.ts       # Read ?g=, push / and /group
 ├── store/
 │   └── ledgerStore.ts   # Zustand store (persisted); actions delegate to lib/ledger
-└── App.tsx              # Welcome gate + three-column workspace
+└── App.tsx              # / welcome, /group three-column workspace
 ```
 
 1. **Balances.** Each bill adds its amount to the person who paid and subtracts a share from each person on it. Equal shares are the default. Parts (2 means twice as much) are optional. Leftover cents are assigned deterministically so balances always sum to exactly zero.
 2. **Settlement.** Repeatedly match the person who owes the most with the person who is owed the most. At most *n − 1* payments. The true minimum is NP-hard; greedy is optimal or very close for a normal group. "Mark as paid" records a payment and the list shrinks.
 3. **One currency.** The group picks USD, ARS, or EUR. Switching it renames the amounts; it does not convert bills already added. "Also show in" is a live rate, rounded to the cent, and it is not used to settle.
+4. **Two routes.** `/` is where you pick the money and start. `/group` is the workspace. Copy link opens that same group for someone else. A bad link is ignored. The build writes `group/index.html` so a refresh on GitHub Pages still loads the app.
 
 All money is stored as **integer cents** — no floating-point rounding bugs.
 
