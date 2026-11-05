@@ -5,17 +5,17 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 
 | File | Lines | Exports / contents |
 | --- | ---: | --- |
-| `src/App.test.tsx` | 118 | 8 test cases |
-| `src/App.tsx` | 128 | `App` (function) |
+| `src/App.test.tsx` | 158 | 12 test cases |
+| `src/App.tsx` | 134 | `App` (function) |
 | `src/components/Card.tsx` | 22 | `Card` (function) |
 | `src/components/ConfirmDialog.tsx` | 46 | `ConfirmDialog` (function) |
 | `src/components/ExpenseForm.test.tsx` | 78 | 5 test cases |
 | `src/components/ExpenseForm.tsx` | 172 | `ExpenseForm` (function) |
 | `src/components/ExpenseList.tsx` | 54 | `ExpenseList` (function) |
-| `src/components/GroupFile.tsx` | 55 | `GroupFile` (function) |
-| `src/components/PeoplePanel.tsx` | 94 | `PeoplePanel` (function) |
+| `src/components/GroupFile.tsx` | 72 | `GroupFile` (function) |
+| `src/components/PeoplePanel.tsx` | 93 | `PeoplePanel` (function) |
 | `src/components/SettlementPanel.tsx` | 158 | `SettlementPanel` (function) |
-| `src/components/WelcomeScreen.tsx` | 49 | `SESSION_KEY` (const), `WelcomeScreen` (function) |
+| `src/components/WelcomeScreen.tsx` | 38 | `WelcomeScreen` (function) |
 | `src/lib/backup.test.ts` | 30 | 1 test cases |
 | `src/lib/backup.ts` | 114 | `serializeLedger` (function), `parseLedgerBackup` (function) |
 | `src/lib/currency.ts` | 14 | `CURRENCIES` (const), `CurrencyCode` (type), `CURRENCY_NAME` (const), `isCurrencyCode` (function) |
@@ -23,8 +23,12 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | `src/lib/day.ts` | 19 | `todayIso` (function), `formatDay` (function) |
 | `src/lib/ledger.test.ts` | 147 | 15 test cases |
 | `src/lib/ledger.ts` | 87 | `Ledger` (interface), `EMPTY_LEDGER` (const), `setCurrency` (function), `setGroupName` (function), `loadLedger` (function), `isNameTaken` (function), `totalCents` (function), `isNameInput` (function), `peopleWithExpenses` (function), `addPerson` (function), `removePerson` (function), `addExpense` (function), `updateExpense` (function), `removeExpense` (function), `addPayment` (function), `removePayment` (function) |
+| `src/lib/link.test.ts` | 23 | 3 test cases |
+| `src/lib/link.ts` | 25 | `encodeGroupParam` (function), `ledgerFromSearch` (function) |
 | `src/lib/money.test.ts` | 55 | 8 test cases |
 | `src/lib/money.ts` | 43 | `parseAmountToCents` (function), `isAmountInput` (function), `centsToInput` (function), `formatCents` (function), `convertCents` (function) |
+| `src/lib/route.test.ts` | 21 | 2 test cases |
+| `src/lib/route.ts` | 12 | `RouteName` (type), `routeName` (function), `routePath` (function) |
 | `src/lib/sample.test.ts` | 13 | 1 test cases |
 | `src/lib/sample.ts` | 33 | `sampleDinner` (function) |
 | `src/lib/settle.test.ts` | 124 | 13 test cases |
@@ -37,6 +41,8 @@ Read this to locate code before opening files. Area rules live in the `AGENTS.md
 | `src/rates/currencyApi.ts` | 55 | `RateQuote` (interface), `ExchangeRateReader` (interface), `parseCurrencyApi` (function), `createCurrencyApiReader` (function), `currencyApi` (const) |
 | `src/rates/lastQuote.ts` | 23 | `readLastQuote` (function), `writeLastQuote` (function) |
 | `src/rates/useExchangeQuote.ts` | 48 | `QuoteStatus` (type), `useExchangeQuote` (function) |
+| `src/sharedGroup.test.ts` | 26 | 2 test cases |
+| `src/sharedGroup.ts` | 29 | `resetSharedGroup` (function), `sharedGroupFromLocation` (function), `openRoute` (function), `groupLink` (function) |
 | `src/store/ledgerStore.test.ts` | 55 | 6 test cases |
 | `src/store/ledgerStore.ts` | 79 | `STORAGE_KEY` (const), `useLedgerStore` (const), `useNameOf` (function) |
-| `src/test/setup.ts` | 22 | — |
+| `src/test/setup.ts` | 25 | — |

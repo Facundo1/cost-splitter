@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 
 import { EMPTY_LEDGER } from '../lib/ledger';
+import { resetSharedGroup } from '../sharedGroup';
 import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import { useLedgerStore } from '../store/ledgerStore';
@@ -18,4 +19,6 @@ afterEach(() => {
   useLedgerStore.setState(EMPTY_LEDGER);
   localStorage.clear();
   sessionStorage.clear();
+  resetSharedGroup();
+  window.history.pushState(null, '', '/');
 });

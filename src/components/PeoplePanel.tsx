@@ -47,7 +47,6 @@ export function PeoplePanel() {
         </button>
       </form>
       {isDuplicate && <p className="hint">That name is already here.</p>}
-      {people.length === 0 && <p className="muted small">Add everyone who shared the cost.</p>}
       <button
         type="button"
         className="ghost"

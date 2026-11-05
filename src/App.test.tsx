@@ -1,8 +1,11 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import App from './App';
-import { STORAGE_KEY } from './store/ledgerStore';
+import { encodeGroupParam, ledgerFromSearch } from './lib/link';
+import { sampleDinner } from './lib/sample';
+import { resetSharedGroup } from './sharedGroup';
+import { STORAGE_KEY, useLedgerStore } from './store/ledgerStore';
 
 async function startApp() {
   const user = userEvent.setup();
@@ -94,6 +97,43 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Start over' }));
     await user.click(screen.getByRole('button', { name: 'Erase everything' }));
     expect(screen.queryByText('Ana')).not.toBeInTheDocument();
+  });
+
+  it('comes back to the welcome screen', async () => {
+    await startApp();
+    window.history.back();
+    expect(await screen.findByRole('button', { name: 'Start' })).toBeInTheDocument();
+  });
+
+  it('opens the group linked in the address', () => {
+    resetSharedGroup();
+    window.history.pushState(null, '', `/group?g=${encodeGroupParam(sampleDinner())}`);
+    render(<App />);
+    expect(screen.getByLabelText('Group name')).toHaveValue('Saturday dinner');
+    expect(screen.getByText('Pizza')).toBeInTheDocument();
+    expect(window.location.search).toBe('');
+  });
+
+  it('ignores a broken group link', () => {
+    resetSharedGroup();
+    useLedgerStore.setState({ people: [{ id: 'ana', name: 'Ana' }] });
+    window.history.pushState(null, '', '/group?g=nope');
+    render(<App />);
+    expect(screen.getByText('Ana')).toBeInTheDocument();
+    expect(window.location.search).toBe('');
+  });
+
+  it('copies a link that opens the same group', async () => {
+    const user = await startApp();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    await addPerson(user, 'Ana');
+    await user.click(screen.getByRole('button', { name: 'Copy link' }));
+    const copied = writeText.mock.calls[0]?.[0];
+    expect(typeof copied).toBe('string');
+    const url = new URL(copied as string);
+    expect(url.pathname).toBe('/group');
+    expect(ledgerFromSearch(url.search)?.people.map((person) => person.name)).toEqual(['Ana']);
   });
 
   it('removes people and expenses, but not someone who still has expenses', async () => {

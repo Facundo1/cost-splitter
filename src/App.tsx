@@ -1,46 +1,66 @@
-import { useState } from 'react';
-import { Card } from './components/Card';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { ConfirmDialog } from './components/ConfirmDialog';
 import { GroupFile } from './components/GroupFile';
 import { ExpenseForm } from './components/ExpenseForm';
 import { ExpenseList } from './components/ExpenseList';
 import { PeoplePanel } from './components/PeoplePanel';
 import { SettlementPanel } from './components/SettlementPanel';
-import { SESSION_KEY, WelcomeScreen } from './components/WelcomeScreen';
+import { WelcomeScreen } from './components/WelcomeScreen';
 import { CURRENCIES, CURRENCY_NAME, isCurrencyCode } from './lib/currency';
+import { routeName, type RouteName } from './lib/route';
 import { sampleDinner } from './lib/sample';
+import { openRoute, sharedGroupFromLocation } from './sharedGroup';
 import { useLedgerStore } from './store/ledgerStore';
 
 export default function App() {
+  const route = useRoute();
+  const load = useLedgerStore((s) => s.load);
+  useLayoutEffect(() => {
+    const apply = () => {
+      const shared = sharedGroupFromLocation();
+      if (shared) load(shared);
+    };
+    const unsubscribe = useLedgerStore.persist.onFinishHydration(apply);
+    apply();
+    return unsubscribe;
+  }, [load]);
+
+  if (route === 'home') {
+    return (
+      <WelcomeScreen
+        onStart={() => openRoute('group')}
+        onSample={() => {
+          load(sampleDinner());
+          openRoute('group');
+        }}
+      />
+    );
+  }
+
+  return <GroupScreen />;
+}
+
+function useRoute(): RouteName {
+  const [route, setRoute] = useState(() => routeName(window.location.pathname));
+  useEffect(() => {
+    const sync = () => setRoute(routeName(window.location.pathname));
+    window.addEventListener('popstate', sync);
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
+  return route;
+}
+
+function GroupScreen() {
   const hasPeople = useLedgerStore((s) => s.people.length > 0);
   const hasExpenses = useLedgerStore((s) => s.expenses.length > 0);
   const currency = useLedgerStore((s) => s.currency);
   const setCurrency = useLedgerStore((s) => s.setCurrency);
   const groupName = useLedgerStore((s) => s.groupName);
   const setGroupName = useLedgerStore((s) => s.setGroupName);
-  const load = useLedgerStore((s) => s.load);
   const reset = useLedgerStore((s) => s.reset);
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const editingId = useLedgerStore((s) => (s.expenses.some((expense) => expense.id === selectedId) ? selectedId : null));
-  const [started, setStarted] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
-
-  const start = () => {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    setStarted(true);
-  };
-
-  if (!started) {
-    return (
-      <WelcomeScreen
-        onStart={start}
-        onSample={() => {
-          load(sampleDinner());
-          start();
-        }}
-      />
-    );
-  }
 
   return (
     <main className="container">
@@ -88,22 +108,12 @@ export default function App() {
           <PeoplePanel />
           <ExpenseForm editingId={editingId} onDone={() => setSelectedId(null)} />
         </div>
-        {hasExpenses ? (
-          <ExpenseList onEdit={setSelectedId} />
-        ) : (
-          <Card title="Bills">
-            <p className="muted">Bills you add will show up here, with who paid and the day.</p>
-          </Card>
-        )}
-        <div className="result">
-          {hasExpenses ? (
+        {hasExpenses && <ExpenseList onEdit={setSelectedId} />}
+        {hasExpenses && (
+          <div className="result">
             <SettlementPanel />
-          ) : (
-            <Card title="Who pays whom" highlight>
-              <p className="muted">After the first bill, this shows who should pay whom, and what each person spent.</p>
-            </Card>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <ConfirmDialog
@@ -118,10 +128,6 @@ export default function App() {
         }}
         onCancel={() => setConfirmingReset(false)}
       />
-
-      <footer className="muted small">
-        Data stays in this browser. No account, no server.
-      </footer>
     </main>
   );
 }

@@ -1,11 +1,14 @@
 import { useRef, useState } from 'react';
 import { parseLedgerBackup, serializeLedger } from '../lib/backup';
+import { groupLink } from '../sharedGroup';
 import { useLedgerStore } from '../store/ledgerStore';
 
 export function GroupFile() {
   const load = useLedgerStore((s) => s.load);
   const input = useRef<HTMLInputElement>(null);
+  const copiedTimer = useRef<number | undefined>(undefined);
   const [problem, setProblem] = useState('');
+  const [copied, setCopied] = useState(false);
 
   function save() {
     const file = new Blob([serializeLedger(useLedgerStore.getState())], { type: 'application/json' });
@@ -28,8 +31,22 @@ export function GroupFile() {
     setProblem('');
   }
 
+  function copyLink() {
+    void navigator.clipboard.writeText(groupLink(useLedgerStore.getState())).then(
+      () => {
+        setCopied(true);
+        window.clearTimeout(copiedTimer.current);
+        copiedTimer.current = window.setTimeout(() => setCopied(false), 2000);
+      },
+      () => setCopied(false),
+    );
+  }
+
   return (
     <div className="file-actions">
+      <button type="button" className="ghost" onClick={copyLink}>
+        {copied ? 'Link copied' : 'Copy link'}
+      </button>
       <button type="button" className="ghost" onClick={save}>
         Save a copy
       </button>
